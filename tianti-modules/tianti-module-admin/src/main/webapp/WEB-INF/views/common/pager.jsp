@@ -55,6 +55,7 @@
 <script type="text/javascript">
 	$(function(){
 		var currentPage = ${page.currentPage};
+		$("#currentPage").val(currentPage)
 		var totalPage = ${page.totalPage };
 		$("#first").bind("click",function(event){
 			pageAction(1);

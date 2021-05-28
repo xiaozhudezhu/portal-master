@@ -6,7 +6,7 @@
             <%-- <a href="javascript:;">
                 <img src="${ctx }/static/images/logo.png" />
             </a> --%>
-            <span style="color: #fff;font-size: 21px;">天梯管理系统</span>
+            <span style="color: #fff;font-size: 42px;">M</span><span style="color: #fff;font-size: 21px;">APLE管理后台</span>
         </div>
         <div class="n_user">
             <div class="u_left">

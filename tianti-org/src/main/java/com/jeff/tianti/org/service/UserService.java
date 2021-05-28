@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jeff.tianti.common.dao.CustomBaseSqlDaoImpl;
 import com.jeff.tianti.common.entity.PageModel;
 import com.jeff.tianti.common.service.CommonService;
 import com.jeff.tianti.org.dao.UserDao;

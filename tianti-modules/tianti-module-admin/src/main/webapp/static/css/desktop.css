@@ -1,4 +1,4 @@
-﻿/* 更新 2017-04-19 */
+/* 更新 2017-04-19 */
 
 @font-face { font-family: 'icomoon'; src: url('../font/icomoon.eot'); src: url('../font/icomoon.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('../font/icomoon.woff') format('woff'), /* chrome��firefox */ url('../font/icomoon.ttf') format('truetype'), /* chrome��firefox��opera��Safari, Android, iOS 4.2+*/ url('../font/icomoon.svg#ifont') format('svg'); /* IE9*/ /* iOS 4.1- */ }
 
@@ -309,8 +309,8 @@ body.mini .J_content { left: 94px; transition: all 0.4s ease; -moz-transition: a
 .J_toolsBar { }
     .J_toolsBar:after { display: block; clear: both; content: ""; visibility: hidden; height: 0; }
 .J_toolsBar { zoom: 1; }
-    .J_toolsBar .t_label { float: left; margin-top: 10px; height: 32px; line-height: 32px; }
-    .J_toolsBar .t_text { float: left; margin-top: 10px; padding: 0 10px; height: 30px; line-height: 30px; background-color: #fff; border: 1px solid #e8e8e8; }
+    .J_toolsBar .t_label { float: left; margin-top: 5px; margin-bottom: 5px; height: 32px; line-height: 32px; }
+    .J_toolsBar .t_text { float: left; margin-top: 5px; margin-bottom: 5px; padding: 0 10px; height: 30px; line-height: 30px; background-color: #fff; border: 1px solid #e8e8e8; }
 
         .J_toolsBar .t_text.w40 { width: 40px; }
         .J_toolsBar .t_text.w60 { width: 60px; }
@@ -374,18 +374,18 @@ body.mini .J_content { left: 94px; transition: all 0.4s ease; -moz-transition: a
         .J_toolsBar .t_select select.active { overflow: hidden; }
 
 
-    .J_toolsBar .t_opacitySelect { float: left; margin-top: 10px; position: relative; height: 30px; line-height: 30px; background-color: #fff; border: 1px solid #e8e8e8; }
+    .J_toolsBar .t_opacitySelect { float: left; margin-top: 5px; margin-bottom: 5px; position: relative; height: 30px; line-height: 30px; background-color: #fff; border: 1px solid #e8e8e8; }
         .J_toolsBar .t_opacitySelect select { padding: 0 20px 0 10px; filter: alpha(opacity=0); opacity: 0; height: 30px; }
         .J_toolsBar .t_opacitySelect span { position: absolute; top: 0; left: 0; width: 100%; height: 30px; line-height: 30px; background: url(../images/drop_down.png) no-repeat right center; text-indent: 20px; color: #666; }
         .J_toolsBar .t_opacitySelect.focus { border: 1px solid #b5dff7; background-color: #f7fbfc; }
 
-    .J_toolsBar .t_code { float: left; margin-top: 10px; position: relative; height: 32px; line-height: 32px; }
+    .J_toolsBar .t_code { float: left; margin-top: 5px; margin-bottom: 5px; position: relative; height: 32px; line-height: 32px; }
         .J_toolsBar .t_code img { height: 32px; vertical-align: top; }
 
-    .J_toolsBar .t_check { float: left; margin-top: 10px; position: relative; height: 32px; line-height: 32px; }
+    .J_toolsBar .t_check { float: left; margin-top: 5px; margin-bottom: 5px; position: relative; height: 32px; line-height: 32px; }
         .J_toolsBar .t_check input { position: relative; top: 2px; }
 
-    .J_toolsBar .t_button { float: left; margin-top: 10px; position: relative; height: 32px; }
+    .J_toolsBar .t_button { float: left; margin-top: 5px; margin-bottom: 5px; position: relative; height: 32px; }
         .J_toolsBar .t_button a { display: block; padding: 0 20px; height: 32px; line-height: 32px; border-radius: 16px; color: #fff; }
             .J_toolsBar .t_button a i { margin-right: 6px; font-size: 18px; vertical-align: middle; }
 

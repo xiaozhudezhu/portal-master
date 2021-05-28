@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.imageio.ImageIO;
+import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -29,8 +29,11 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.jeff.tianti.common.config.AppConfig;
+import com.jeff.tianti.common.dao.CustomBaseSqlDaoImpl;
+import com.jeff.tianti.common.entity.PageModel;
 import com.jeff.tianti.common.service.CommonService;
 import com.jeff.tianti.gemstone.dao.GemstoneReportDao;
+import com.jeff.tianti.gemstone.dto.GemstoneReportQueryDTO;
 import com.jeff.tianti.gemstone.entity.GemstoneReport;
 import com.jeff.tianti.gemstone.entity.GemstoneReportImage;
 
@@ -39,29 +42,65 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 	
 	@Autowired
 	private AppConfig appConfig;
+	
+	@Autowired
+	private CustomBaseSqlDaoImpl customBaseSqlDaoImpl; 
 
 	@Autowired
 	public void setDao(GemstoneReportDao dao) {
 		super.setCommonDao(dao);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public PageModel<GemstoneReport> queryGemstoneReportPage(GemstoneReportQueryDTO dto){
+		Map<String,Object> params = new HashMap<String,Object>();
+		StringBuilder hql = new StringBuilder();
+		hql.append(" select u from GemstoneReport u where 1=1 ");
+		if(StringUtils.isNotBlank(dto.getNo())){
+			hql.append(" and u.no like :no ");
+			params.put("no", "%" + dto.getNo() + "%");
+		}
+		hql.append(" order by u.createDate desc ");
+		return customBaseSqlDaoImpl.queryForPageWithParams(hql.toString(), params, dto.getCurrentPage(), dto.getPageSize());
+	}
+	
+	public void saveGemstoneReport(GemstoneReport report) {
+		if(StringUtils.isEmpty(report.getId()))
+			report = this.save(report);
+		else {
+			GemstoneReport report1 = this.find(report.getId());
+			if(report1 != null) {
+				report.setAuditFlag(report1.getAuditFlag());
+				report.setDeleteFlag(report1.getDeleteFlag());
+			}
+		}
+			
+		this.generateFile(report.getId());
+	}
+	
+	public void deleteGemstoneReport(String reportId) {
+		this.delete(reportId);
+		File file = this.getReportFile(reportId);
+		if(file != null && file.exists())
+			file.delete();
 	}
 
 	public void generateFile(String reportId) {
 		GemstoneReport report = this.get(reportId);
 		if (report != null) {
 			// 模板路径
-			String templatePath = "D:/template1.pdf";
+			String templatePath = Thread.currentThread().getContextClassLoader().getResource("template1.pdf").getPath();
 			// 生成的新文件路径
-			String newPDFPath = "D:/export.pdf";
-
+			String newPDFPath = appConfig.getFileDir() + "/reports/" + reportId + ".pdf";
+			File newPDFDir = new File(appConfig.getFileDir() + "/reports");
+			if(!newPDFDir.exists())
+				newPDFDir.mkdirs();
+			
 			PdfReader reader;
 			FileOutputStream out;
 			ByteArrayOutputStream bos;
 			PdfStamper stamper;
 			try {
-				// BaseFont bf =
-				// BaseFont.createFont("c://windows//fonts//simsun.ttc,1" ,
-				// BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-				// Font FontChinese = new Font(bf, 5, Font.NORMAL);
 				out = new FileOutputStream(newPDFPath);// 输出流
 				reader = new PdfReader(templatePath);// 读取pdf模板
 				bos = new ByteArrayOutputStream();
@@ -158,6 +197,17 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public File getReportFile(String reportId) {
+		File file = null;
+		GemstoneReport report = this.get(reportId);
+		if (report != null) {
+			// 生成的新文件路径
+			String pdfPath = appConfig.getFileDir() + "/reports/" + reportId + ".pdf";
+			file = new File(pdfPath);
+		}
+		return file;
 	}
 	
 	private void createQRCode(String content, int width, int height, BarcodeFormat format, File file) throws Exception {

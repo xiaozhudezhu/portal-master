@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>添加/编辑文章 - ${title }</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/static/js/uploadify/uploadify.css"> 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/js/uploadify/uploadifive.css"> 
 </head>
 <body>
 
@@ -144,7 +144,7 @@
 						<div class="t_img w100 ml10">
 						    <c:choose>
 						        <c:when test="${article.coverImageUrl != null && article.coverImageUrl != ''}">
-						            <img src="${ctx }${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
+						            <img src="${ctx }/upload/getImage?imagePath=${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
 						        </c:when>
 						        <c:otherwise>
 						            <img src="${ctx }/static/images/J_null.png" id="attachURL" width="100px" height="100px" />
@@ -203,7 +203,7 @@
  </div>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/ueditor/editor_config.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/ueditor/editor_all.js"></script>
-	<script src="${pageContext.request.contextPath}/static/js/uploadify/jquery.uploadify.js"></script>
+	<script src="${pageContext.request.contextPath}/static/js/uploadify/jquery.uploadifive.min.js"></script>
 	<script type="text/javascript">
 		//表单验证
 		$(function(){
@@ -293,18 +293,18 @@
 		
 	   $("#attachImage").uploadify(
 		{
-			'swf' : '${pageContext.request.contextPath}/static/js/uploadify/uploadify.swf',
-			'uploader' : '${pageContext.request.contextPath}/upload/uploadAttach',
-			'cancelImg' : '${pageContext.request.contextPath}/static/js/uploadify/uploadify-cancel.png',
-			'queueID' : 'fileQueue',
+			'uploader' : '${ctx}/upload/uploadAttach',
+			'cancelImg' : '${ctx}/static/js/uploadify/uploadify-cancel.png',
 			'auto' : true,
 			'multi' : false,
 			'simUploadLimit' : 1,
-			'buttonText' : '上传图片',
+			'buttonText' : '请点击选择图片',
 			'fileObjName' : 'fileData',
 			'width' : 70,
 			'height' : 20,
-			'uploadLimit':3,
+			'uploadLimit':5,
+			'removeCompleted': true,
+			'fileType'  : 'image/*',//只允许图片格式的文件
 			'onUploadSuccess' : function(file, data, response) {
 					if(data != null){
 						var attachUrl = '${pageContext.request.contextPath}' + data;								

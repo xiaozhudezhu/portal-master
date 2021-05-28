@@ -13,9 +13,11 @@ import javax.persistence.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.jeff.tianti.common.entity.PageModel;
 
+@Service
 public class CustomBaseSqlDaoImpl {
 	
 	@Autowired

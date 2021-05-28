@@ -11,9 +11,9 @@ import java.util.Map;
  */
 public class CommonQueryDTO {
 
-	private Integer currentPage;
+	private Integer currentPage = 1;
 
-	private Integer pageSize;
+	private Integer pageSize = 10;
 
 	/**
 	 * 查询条件

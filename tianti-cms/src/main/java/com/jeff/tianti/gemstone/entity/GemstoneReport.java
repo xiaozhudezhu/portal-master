@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.jeff.tianti.common.entity.BaseEntity;
 
 @Entity
@@ -23,6 +25,7 @@ public class GemstoneReport extends BaseEntity {
 	
 	private String no;
 	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date reportDate;
 	
 	private String object;
