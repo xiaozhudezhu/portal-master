@@ -11,6 +11,21 @@ function removeImage(ele) {
 	$(ele).parent().remove();
 }
 
+function changeReportType(type) {
+	if(type == '1') {
+		$('#reportType2Table').hide();
+		$('#reportType1Table').show();
+		$('#reportType1Table :input').removeAttr('disabled');
+		$('#reportType2Table :input').attr('disabled', 'disabled');
+	}
+	else if(type == '2') {
+		$('#reportType1Table').hide();
+		$('#reportType2Table').show();
+		$('#reportType2Table :input').removeAttr('disabled');
+		$('#reportType1Table :input').attr('disabled', 'disabled');
+	}
+	
+}
 //表单验证
 $(function(){
 	
@@ -32,7 +47,7 @@ $(function(){
 					layer.close(laodIdx);
 					if(result.success){
 						layer.alert('保存成功', function(){
-							//window.location.reload();
+							window.location.reload();
 						});
 					}else{
 						layer.alert(result.msg);
@@ -80,6 +95,7 @@ $(function(){
 		<form action="${ctx }/gr/ajax/save" id="editForm" method="post">
 		<input type="hidden" name="id" value="${report.id }"/>
 		<div class="">
+			
 			<div class="J_formTable l_form_table">
 				<table class="not_hightlight" style="width: 100%">
 					<tr>
@@ -87,8 +103,8 @@ $(function(){
                          <td width="35%">
                              <div class="J_toolsBar fl">
                                  <div class="t_check ml10">
-                                 	<label><input name="type" type="radio" value="1" <c:if test="${report.type == 1 }">checked="checked"</c:if> />宝石</label> 
-						 			<label><input name="type" type="radio" value="2" <c:if test="${report.type == 2 }">checked="checked"</c:if>/>钻石</label> 
+                                 	<label><input name="type" type="radio" value="1" onclick="changeReportType('1')" <c:if test="${report.type == 1 || report.type == null }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if> />宝石</label> 
+						 			<label><input name="type" type="radio" value="2" onclick="changeReportType('2')" <c:if test="${report.type == 2 }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if>/>钻石</label> 
                                  </div>
                              </div>
                          </td>
@@ -96,7 +112,7 @@ $(function(){
                          <td width="40%">
                          </td>
                      </tr>
-					<tr>
+                     <tr>
 						<td class="l_title" width="15%"><b class="cRed">*</b> 编号</td>
                          <td width="35%">
                              <div class="J_toolsBar fl">
@@ -132,17 +148,21 @@ $(function(){
                              </div>
                          </td>
                      </tr>
+            	</table>
+            	<c:if test="${report.type == 1 || report.type == null }">
+            	<table id="reportType1Table" style="width: 100%">
+					
 					 <tr>
-						<td class="l_title "><b class="cRed">*</b> 重量(CT)</td>
-                         <td>
+						<td class="l_title" width="15%"><b class="cRed">*</b> 重量(CT)</td>
+                         <td width="35%">
                              <div class="J_toolsBar fl">
                                  <div class="t_text w200 ml10">
                                      <input type="text" name="weight" data-rule="重量:required;weight;" value="${report.weight }" />
                                  </div>
                              </div>
                          </td>
-                         <td class="l_title"><b class="cRed">*</b> 尺寸(MM)</td>
-                         <td>
+                         <td class="l_title" width="10%"><b class="cRed">*</b> 尺寸(MM)</td>
+                         <td width="40%">
                              <div class="J_toolsBar fl">
                                  <div class="t_text w40 ml10">
                                      <input type="text" name="dimensionsLength" value="${report.dimensionsLength }" />
@@ -194,9 +214,124 @@ $(function(){
                              </div>
                          </td>
                      </tr>
+                </table>
+                </c:if>
+                <c:if test="${report.type == 2 || report.type == null }">
+				<table id="reportType2Table" style="width: 100%; <c:if test="${report.type == null }">display:none</c:if>">
                      <tr>
-						<td class="l_title "><b class="cRed">*</b> 图片</td>
-                         <td colspan="3">
+						<td class="l_title" width="15%"><b class="cRed">*</b> 形状/切割款式</td>
+                         <td width="35%">
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="cut" data-rule="形状:required;cut;" value="${report.cut }" />
+                                 </div>
+                             </div>
+                         </td>
+                         <td class="l_title" width="10%"><b class="cRed">*</b> 重量(CT)</td>
+                         <td width="40%">
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="weight" data-rule="重量:required;weight;" value="${report.weight }" />
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+						<td class="l_title "><b class="cRed">*</b> 颜色</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="colorGrade" data-rule="颜色:required;colorGrade;" value="${report.colorGrade }" />
+                                 </div>
+                             </div>
+                         </td>
+                         <td class="l_title "><b class="cRed">*</b> 净度</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="clarityGrade" data-rule="净度:required;clarityGrade;" value="${report.clarityGrade }" />
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+					 <tr>
+						<td class="l_title"><b class="cRed">*</b> 比例</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="proportions" data-rule="比例:required;proportions;" value="${report.proportions }" />
+                                 </div>
+                             </div>
+                         </td>
+                         <td class="l_title"><b class="cRed">*</b> 尺寸(MM)</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w40 ml10">
+                                     <input type="text" name="dimensionsLength" value="${report.dimensionsLength }" />
+                                 </div>
+                                 <div class="t_text" style="border:0;padding: 0 5px">X</div>
+                                 <div class="t_text w40">
+                                     <input type="text" name="dimensionsWidth" value="${report.dimensionsWidth }" />
+                                 </div>
+                                 <div class="t_text" style="border:0;padding: 0 4px">X</div>
+                                 <div class="t_text w40">
+                                     <input type="text" name="dimensionsHeight" value="${report.dimensionsHeight }" />
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+						<td class="l_title "><b class="cRed">*</b> 抛光度</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="polish" data-rule="抛光度:required;polish;" value="${report.polish }" />
+                                 </div>
+                             </div>
+                         </td>
+                         <td class="l_title "><b class="cRed">*</b> 对称性</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="symmetry" data-rule="对称性:required;symmetry;" value="${report.symmetry }" />
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+						<td class="l_title "><b class="cRed">*</b> 荧光</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="fluorescence" data-rule="荧光:required;fluorescence;" value="${report.fluorescence }" />
+                                 </div>
+                             </div>
+                         </td>
+                         <td class="l_title "><b class="cRed">*</b> 评价</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_text w200 ml10">
+                                     <input type="text" name="comments" data-rule="评价:required;comments;" value="${report.comments }" />
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+						<td class="l_title "><b class="cRed">*</b> 净度特征</td>
+                        <td colspan="3">
+                             <div class="J_toolsBar fl">
+                                 <div class="t_textarea w200 ml10">
+                                     <textarea name="clarityFeature" data-rule="净度特征:required;clarityFeature;">${report.clarityFeature }</textarea>
+                                 </div>
+                             </div>
+                         </td>
+                     </tr>
+				</table>
+				</c:if>
+				<table style="width: 100%">
+					<tr>
+						<td class="l_title " width="15%"><b class="cRed">*</b> 图片</td>
+                         <td colspan="3" width="85%">
                              <div class="J_toolsBar">
                                  <div class="w200 ml10">
 									<input type="file" id="uploadImage" /> 
