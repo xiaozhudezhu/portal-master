@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.swinginwind</groupId>
+		<artifactId>portal-master</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>com.swinginwind.portal.cms</groupId>
+	<artifactId>portal-cms</artifactId>
+	<version>${portal.version}</version>
+	<name>portal-cms</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<zxing.version>3.2.1</zxing.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.swinginwind.portal.common</groupId>
+			<artifactId>portal-common</artifactId>
+			<version>${portal.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.13</version>
+		</dependency>
+		<!-- 开源多维码生成工具 -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>${zxing.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>${zxing.version}</version>
+		</dependency>
+	</dependencies>
+</project>

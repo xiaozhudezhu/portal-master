@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.swinginwind.portal.modules</groupId>
+    <artifactId>portal-modules</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>com.swinginwind.portal.inter</groupId>
+  <artifactId>portal-module-interface</artifactId>
+  <version>${portal.version}</version>
+  <packaging>war</packaging>
+  <name>portal-module-interface</name>
+  <description>portal-module-interface</description>
+  
+  <dependencies>
+        <dependency>
+			<groupId>com.swinginwind.portal.common</groupId>
+			<artifactId>portal-common</artifactId>
+			<version>${portal.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.swinginwind.portal.cms</groupId>
+			<artifactId>portal-cms</artifactId>
+			<version>${portal.version}</version>
+		</dependency>
+  </dependencies>
+  <build>
+    <finalName>portal-module-interface</finalName>
+  </build>
+</project>
