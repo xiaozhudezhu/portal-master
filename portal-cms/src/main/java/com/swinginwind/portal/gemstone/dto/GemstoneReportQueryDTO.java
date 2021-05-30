@@ -7,6 +7,8 @@ package com.swinginwind.portal.gemstone.dto;
 public class GemstoneReportQueryDTO extends CommonQueryDTO{
 	
 	private String no;
+	
+	private String type;
 
 	/**
 	 * @return the no
@@ -20,6 +22,20 @@ public class GemstoneReportQueryDTO extends CommonQueryDTO{
 	 */
 	public void setNo(String no) {
 		this.no = no;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 

@@ -345,7 +345,7 @@ public class CmsController {
 			article = this.articleService.find(id);
 			if(article != null){
 				rootColumnId = article.getRootColumnInfo().getId();
-				columnId = article.getColumnInfo().getId();
+				columnId = article.getColumnInfo() != null ? article.getColumnInfo().getId() : null;
 			}
 		}
 		ColumnInfoQueryDTO columnInfoQueryDTO =new ColumnInfoQueryDTO();

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +63,16 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 			hql.append(" and u.no like :no ");
 			params.put("no", "%" + dto.getNo() + "%");
 		}
+		if (StringUtils.isNotBlank(dto.getType())) {
+			hql.append(" and u.type = :type ");
+			params.put("type", dto.getType());
+		}
 		hql.append(" order by u.createDate desc ");
 		return customBaseSqlDaoImpl.queryForPageWithParams(hql.toString(), params, dto.getCurrentPage(),
 				dto.getPageSize());
 	}
 
-	public void saveGemstoneReport(GemstoneReport report) {
+	public void saveGemstoneReport(GemstoneReport report, HttpServletRequest request) {
 		if (StringUtils.isEmpty(report.getId()))
 			report = this.save(report);
 		else {
@@ -79,7 +84,7 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				this.update(report);
 			}
 		}
-		this.generateFile(report.getId());
+		this.generateFile(report.getId(), request);
 	}
 
 	public void deleteGemstoneReport(String reportId) {
@@ -89,7 +94,7 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 			file.delete();
 	}
 
-	public void generateFile(String reportId) {
+	public void generateFile(String reportId, HttpServletRequest request) {
 		GemstoneReport report = this.get(reportId);
 		if (report != null) {
 			// 模板路径
@@ -159,8 +164,11 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				Rectangle signRect = form.getFieldPositions("qrcode").get(0).position;
 				float x = signRect.getLeft();
 				float y = signRect.getBottom();
-
-				String content = "http://www.baidu.com";// 二维码内容
+				String content = request.getScheme() //当前链接使用的协议
+					    +"://" + request.getServerName()//服务器地址 
+					    + ":" + request.getServerPort() //端口号 
+					    + request.getContextPath() //应用名称，如果应用名称为
+					    + "/gr/getReportFile?reportId=" + reportId;
 				String filePath = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString() + ".png";
 				File tempFile = new File(filePath);
 				this.createQRCode(content, (int) signRect.getWidth(), (int) signRect.getHeight(), BarcodeFormat.QR_CODE,

@@ -69,14 +69,14 @@ public class GemstoneReportController {
 
 	@RequestMapping("/ajax/save")
 	@ResponseBody
-	public AjaxResult ajaxSave(GemstoneReport report, String imagesStr) {
+	public AjaxResult ajaxSave(GemstoneReport report, String imagesStr, HttpServletRequest request) {
 		AjaxResult ajaxResult = new AjaxResult();
 		ajaxResult.setSuccess(false);
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JavaType javaType = objectMapper.getTypeFactory().constructParametricType(Set.class, GemstoneReportImage.class);
 			report.setImages((Set<GemstoneReportImage>) objectMapper.readValue(imagesStr, javaType));
-			gemstoneReportService.saveGemstoneReport(report);
+			gemstoneReportService.saveGemstoneReport(report, request);
 			ajaxResult.setSuccess(true);
 
 		} catch (Exception e) {
@@ -105,10 +105,10 @@ public class GemstoneReportController {
 
 	@RequestMapping("/generateFile")
 	@ResponseBody
-	public AjaxResult generateFile(String reportId) {
+	public AjaxResult generateFile(String reportId, HttpServletRequest request) {
 		AjaxResult ajaxResult = new AjaxResult();
 		ajaxResult.setSuccess(false);
-		gemstoneReportService.generateFile(reportId);
+		gemstoneReportService.generateFile(reportId, request);
 		return ajaxResult;
 	}
 	

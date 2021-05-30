@@ -24,8 +24,12 @@
                 </div>
               
                 <div class="t_label">&nbsp;证书类型</div>
-				<div class="t_text ml10">
-                	
+				<div class="t_text w100 ml10" style="padding:0">
+					<select name="type" style="width:100%;height:100%;border:0">
+						<option value="">请选择</option>
+						<option value="1" <c:if test="${queryDTO.type == 1 }">selected="selected"</c:if>>宝石</option>
+						<option value="2" <c:if test="${queryDTO.type == 2 }">selected="selected"</c:if>>钻石</option>
+					</select>
                 </div>
                 <div class="t_button mgl30">
                		<a class="abtn red" href="javascript:myQuery();">
@@ -148,14 +152,7 @@
 		                                 <td>
 		                                     <div class="t_link">
 		                                         <a href="javascript:myEdit('${u.id }');"><i class="icon"></i>编辑</a>
-		                                         <c:choose>
-		                                         	<c:when test="${u.deleteFlag eq '0' }">
-		                                         		<a href="javascript:updStatus('${u.id }', '1');"><i class="icon"></i>删除</a>
-		                                         	</c:when>
-		                                         	<c:otherwise>
-		                                         		<a href="javascript:updStatus('${u.id }', '0');"><i class="icon"></i>恢复</a>
-		                                         	</c:otherwise>
-		                                         </c:choose>
+		                                         	<a href="javascript:deleteReport('${u.id }');"><i class="icon"></i>删除</a>
 		                                         <a href="${ctx}/gr/getReportFile?reportId=${u.id }" target="_blank"><i class="icon"></i>查看证书</a>
 		                                     </div>
 		                                 </td>
@@ -220,30 +217,21 @@
 	}
 	
 	function myExport(){
-		var userName = $("#userName").val();
-		window.location.href="${ctx}/user/export?userName="+userName;
+		layer.alert('功能开发中..');
+		//var userName = $("#userName").val();
+		//window.location.href="${ctx}/user/export?userName="+userName;
 	}
 	
-	function updStatus(id, status){
-		var ids = new Array();
-		ids.push(id);
-		
-		var content = '';
-		if(status == '1'){
-			content = '确认要恢复数据吗？';
-		}else{
-			content = '确认要删除数据吗？';
-		}
-		
+	function deleteReport(id){		
+		var content = '确定要删除数据吗？';
 		layer.confirm(content, function(index){
 			layer.close(index);
 			var loadIdx = layer.load();
 			$.ajax({
-				url : '${ctx}/user/ajax/upd/status',
+				url : '${ctx}/gr/ajax/delete',
 				type : 'post',
 				data : {
-					'ids' : ids,
-					'status' : status
+					'reportId' : id
 				},
 				traditional : true,
 				success : function(result){

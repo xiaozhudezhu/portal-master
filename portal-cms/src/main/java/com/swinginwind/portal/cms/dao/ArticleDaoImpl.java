@@ -74,6 +74,8 @@ public class ArticleDaoImpl extends CustomBaseSqlDaoImpl implements ArticleDaoCu
             			 hql.append(" and t.deleteFlag =1 ");
             		 }else if(articleQueryDTO.getType().equals("zhiding")){
             			 hql.append(" and t.isTop =1 ");
+            		 }else if(articleQueryDTO.getType().equals("shenhe")){
+            			 hql.append(" and t.isAudit =1 and t.deleteFlag ='0' ");
             		 }
                      hql.append(" order by t.createDate desc ");
             	 }
@@ -121,6 +123,8 @@ public class ArticleDaoImpl extends CustomBaseSqlDaoImpl implements ArticleDaoCu
             			 hql.append(" and t.deleteFlag =1 ");
             		 }else if(articleQueryDTO.getType().equals("zhiding")){
             			 hql.append(" and t.isTop =1 ");
+            		 }else if(articleQueryDTO.getType().equals("shenhe")){
+            			 hql.append(" and t.isAudit =1 and t.deleteFlag ='0' ");
             		 }
                      hql.append(" order by t.createDate desc ");
             	 }
