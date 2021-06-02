@@ -81,6 +81,13 @@ $(function(){
 						}
 			 }
 		   });
+	$('#reportNoInput').unbind().focus(function() {
+		 readCardTimer = setInterval(Read, 1000);
+		 gl_uid = '';
+		 readCardInput = this;
+	 }).blur(function() {
+		 clearInterval(readCardTimer);
+	 });
 	
 });
 
@@ -117,7 +124,7 @@ $(function(){
                          <td width="35%">
                              <div class="J_toolsBar fl">
                                  <div class="t_text w200 ml10">
-                                 	<input type="text" name="no" data-rule="编号:required;no;" value="${report.no}" />
+                                 	<input id="reportNoInput" type="text" name="no" data-rule="编号:required;no;" value="${report.no}" />
                                  </div>
                              </div>
                          </td>

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="${ctx}/static/js/uploadify/uploadifive.css"> 
 
 <script src="${ctx}/static/js/uploadify/jquery.uploadifive.min.js"></script>
+<script src="${ctx}/static/js/rfid/interface.js"></script>
 
 </head>
 <link href="${ctx }/static/plugins/chosen_v1.6.2/chosen.css" rel="stylesheet" />
@@ -20,12 +21,16 @@
 	        <div class="J_toolsBar clearfix">
 				<div class="t_label">证书编号</div>
 				<div class="t_text ml10">
-                	<input placeholder="请输入证书编号" type="text" name="no" id="no" value="${queryDTO.no }"/>
+                	<input placeholder="请输入证书编号" type="text" name="no" id="reportQueryNoInput" value="${queryDTO.no }"/>
                 </div>
               
                 <div class="t_label">&nbsp;证书类型</div>
-				<div class="t_text ml10">
-                	
+				<div class="t_text w100 ml10" style="padding:0">
+					<select name="type" style="width:100%;height:100%;border:0">
+						<option value="">请选择</option>
+						<option value="1" <c:if test="${queryDTO.type == 1 }">selected="selected"</c:if>>宝石</option>
+						<option value="2" <c:if test="${queryDTO.type == 2 }">selected="selected"</c:if>>钻石</option>
+					</select>
                 </div>
                 <div class="t_button mgl30">
                		<a class="abtn red" href="javascript:myQuery();">
@@ -46,6 +51,11 @@
                		<a class="abtn maxblue" href="javascript:myExport();">
                			<i class="icon"></i>导入
                		</a>
+               	</div>
+               	<div class="t_button ml10">
+               	<a class="abtn gray" href="${ctx}/static/js/rfid/reader_setup.msi">
+               		<i class="icon"></i>下载读卡器插件
+               	</a>
                	</div>
                	<div class="t_label ml10">
 					记录数：<label style="color: red;" id="total">${page.totalCount }</label>
@@ -148,15 +158,9 @@
 		                                 <td>
 		                                     <div class="t_link">
 		                                         <a href="javascript:myEdit('${u.id }');"><i class="icon"></i>编辑</a>
-		                                         <c:choose>
-		                                         	<c:when test="${u.deleteFlag eq '0' }">
-		                                         		<a href="javascript:updStatus('${u.id }', '1');"><i class="icon"></i>删除</a>
-		                                         	</c:when>
-		                                         	<c:otherwise>
-		                                         		<a href="javascript:updStatus('${u.id }', '0');"><i class="icon"></i>恢复</a>
-		                                         	</c:otherwise>
-		                                         </c:choose>
-		                                         <a href="${ctx}/gr/getReportFile?reportId=${u.id }" target="_blank"><i class="icon"></i>查看证书</a>
+		                                         	<a href="javascript:deleteReport('${u.id }');"><i class="icon"></i>删除</a>
+		                                         <a href="${ctx}/gr/getReportFile?reportId=${u.id }&isPrint=false" target="_blank"><i class="icon"></i>查看</a>
+		                                         <a href="javascript:printReportFile('${u.id }')"><i class="icon"></i>打印</a>
 		                                     </div>
 		                                 </td>
 		                             </tr>
@@ -181,6 +185,7 @@
             </form>
 		</div>
     </div>
+<iframe style="display:none" id="printIframe"></iframe>
 <script src="${ctx }/static/plugins/chosen_v1.6.2/chosen.jquery.js"></script>    
 <script type="text/javascript">
 	function myEdit(id){
@@ -220,30 +225,21 @@
 	}
 	
 	function myExport(){
-		var userName = $("#userName").val();
-		window.location.href="${ctx}/user/export?userName="+userName;
+		layer.alert('功能开发中..');
+		//var userName = $("#userName").val();
+		//window.location.href="${ctx}/user/export?userName="+userName;
 	}
 	
-	function updStatus(id, status){
-		var ids = new Array();
-		ids.push(id);
-		
-		var content = '';
-		if(status == '1'){
-			content = '确认要恢复数据吗？';
-		}else{
-			content = '确认要删除数据吗？';
-		}
-		
+	function deleteReport(id){		
+		var content = '确定要删除数据吗？';
 		layer.confirm(content, function(index){
 			layer.close(index);
 			var loadIdx = layer.load();
 			$.ajax({
-				url : '${ctx}/user/ajax/upd/status',
+				url : '${ctx}/gr/ajax/delete',
 				type : 'post',
 				data : {
-					'ids' : ids,
-					'status' : status
+					'reportId' : id
 				},
 				traditional : true,
 				success : function(result){
@@ -259,6 +255,179 @@
 			});
 		});
 	}
+	
+	function printReportFile(reportId) {
+		$('#printIframe').attr('src', '${ctx}/gr/getReportFile?reportId=' + reportId + '&isPrint=true');
+		var laodIdx = layer.load();
+		$('#printIframe').load(function() {
+			layer.close(laodIdx);
+			$("#printIframe")[0].contentWindow.print();
+		})
+		
+	}
 </script>
+
+
+<script> 
+var msg = document.getElementById('TxtArea');
+</script>
+
+<script>
+var obj = embed_reader.getOBJ(READER_TYPE._reader_type_contactLess);
+obj.onResult(function(rData)
+{
+	switch(rData.FunctionID)
+    {
+    case FUNCIDS._fid_adaptReader:
+    	Connect();
+    break;
+		case FUNCIDS._fid_initialcom:
+		{
+		var opst;
+		var rel = rData.RePara_Int;
+		if(0 == rel)
+		{
+			var hdev = parseInt(rData.RePara_Str);
+			if(hdev != -1)
+			{
+				icdev= hdev;
+				//obj.beep(icdev,10);   //do a beep
+				layer.msg('读卡器连接成功！');
+				isComOpen=true;             //Set reader link status
+				obj.config_card(icdev, 0x31);//config to iso15693
+				$('#reportQueryNoInput').unbind().focus(function() {
+					 readCardTimer = setInterval(Read, 1000);
+					 gl_uid = '';
+					 readCardInput = this;
+				 }).blur(function() {
+					 clearInterval(readCardTimer);
+				 });
+			}
+			else
+			{
+				layer.msg('读卡器连接失败！');
+						isComOpen=false;           //Set reader link failed status
+			}
+		}
+		else
+			layer.msg('读卡器连接失败！');
+		}
+		break;
+		case FUNCIDS._fid_exit:
+			layer.msg('连接已断开！');
+			break;
+		case FUNCIDS._fid_beep:
+			obj.config_card(icdev, 0x31);//config to iso15693
+			break;
+		case FUNCIDS._fid_icode_inventory:
+		{
+			var strcard= rData.RePara_Str;
+			if(strcard!="")
+			{	if(strcard != gl_uid) {
+					hasCard =true;
+					layer.msg('读取到卡号：' + strcard);
+        			gl_uid = strcard;
+        			obj.icode_select_uid(icdev, gl_flags, gl_uid);
+				}
+			}
+			else
+			{
+				//layer.msg('未发现卡！');
+				hasCard =false;        //Set no card status
+			}
+		}
+		break;
+		case FUNCIDS._fid_icode_select_uid:
+		{
+      var rel = rData.RePara_Int;
+      if(0 == rel)
+      {
+        
+        switch(gl_wantFunc)
+        {
+          case GFUNC.readICode:
+          obj.icode_readblock(icdev, gl_flags, gl_BinBlock, gl_rwBlockNum, gl_uid);
+          break;
+        }
+      }
+		}
+		break;
+		case FUNCIDS._fid_icode_readblockAsStr:
+		{
+			var data =  rData.RePara_Str;     
+			if(data != "")
+			{
+				readCardInput.value = data;
+			}
+			else
+			{
+				layer.msg('卡内容读取失败');
+			}
+		}
+		break;
+
+	}
+	
+}
+);
+
+
+//Link Reader
+function Connect()
+{
+	try{
+	if(isComOpen==false)          //if reader link failed
+	{
+		//alert("initialcom");
+	  obj.initialcom(100,115200);
+	}
+	}catch(e){alert(e.message);}
+
+	return;
+}
+
+//Read card
+function Read()
+{
+     var findMode = 0x36;//0x16:multi-card mode, 0x36:single-card mode
+     var afi = 0;
+     var maskLen = 0;
+     
+	obj.icode_inventory(icdev,findMode, afi, maskLen);
+	gl_wantFunc = GFUNC.readICode;
+}
+
+
+//Disconnect with reader
+function Disconnect()
+{
+	iRet = obj.exit(icdev);
+    isComOpen=false; //Set unlink status
+}
+
+
+<!--
+
+var GFUNC = {
+	readICode:1,
+	writeICode:2,
+	lockICode:3,
+};
+
+ var nRead =0;     //The count one card repeat find
+ var hasCard =false;
+ var isComOpen=false;
+ var icdev= -1;
+ var gl_sector = 2;
+ var gl_BinBlock = 8;
+ var gl_wantFunc =  1;
+ var gl_rwBlockNum = 1;
+ var gl_flags = 0x22;
+ var gl_uid = "";
+var readCardTimer = 0;
+ var readCardInput;
+
+</script>
+
 </body>
 </html>

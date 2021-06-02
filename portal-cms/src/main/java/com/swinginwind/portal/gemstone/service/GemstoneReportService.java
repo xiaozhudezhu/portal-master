@@ -1,5 +1,6 @@
 package com.swinginwind.portal.gemstone.service;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,24 +85,28 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				this.update(report);
 			}
 		}
-		this.generateFile(report.getId(), request);
+		this.generateFile(report.getId(), true, request);
+		this.generateFile(report.getId(), false, request);
 	}
 
 	public void deleteGemstoneReport(String reportId) {
 		this.delete(reportId);
-		File file = this.getReportFile(reportId);
+		File file = this.getReportFile(reportId, true);
+		if (file != null && file.exists())
+			file.delete();
+		file = this.getReportFile(reportId, false);
 		if (file != null && file.exists())
 			file.delete();
 	}
 
-	public void generateFile(String reportId, HttpServletRequest request) {
+	public void generateFile(String reportId, boolean isPrint, HttpServletRequest request) {
 		GemstoneReport report = this.get(reportId);
 		if (report != null) {
 			// 模板路径
 			String templatePath = Thread.currentThread().getContextClassLoader()
-					.getResource("template" + report.getType() + ".pdf").getPath();
+					.getResource("template" + report.getType() + (isPrint ? "-print" : "") + ".pdf").getPath();
 			// 生成的新文件路径
-			String newPDFPath = appConfig.getFileDir() + "/reports/" + reportId + ".pdf";
+			String newPDFPath = appConfig.getFileDir() + "/reports/" + reportId + (isPrint ? "-print" : "") + ".pdf";
 			File newPDFDir = new File(appConfig.getFileDir() + "/reports");
 			if (!newPDFDir.exists())
 				newPDFDir.mkdirs();
@@ -219,14 +224,21 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 			}
 		}
 	}
+	
+	public File getReportFile(String reportId, boolean isPrint) {
+		String pdfPath = appConfig.getFileDir() + "/reports/" + reportId + (isPrint ? "-print" : "") + ".pdf";
+		File file = new File(pdfPath);
+		return file;
+	}
 
-	public File getReportFile(String reportId) {
+	public File getReportFile(String reportId, boolean isPrint, HttpServletRequest request) {
 		File file = null;
 		GemstoneReport report = this.get(reportId);
 		if (report != null) {
-			// 生成的新文件路径
-			String pdfPath = appConfig.getFileDir() + "/reports/" + reportId + ".pdf";
-			file = new File(pdfPath);
+			file = this.getReportFile(reportId, isPrint);
+			if(!file.exists()) {
+				this.generateFile(reportId, isPrint, request);
+			}
 		}
 		return file;
 	}
@@ -238,9 +250,37 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 		// 指定纠错等级
 		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
 		// 设置二维码边的空度，非负数
-		hints.put(EncodeHintType.MARGIN, 1);
+		hints.put(EncodeHintType.MARGIN, 0);
 		BitMatrix bitMatrix = new MultiFormatWriter().encode(content, format, width, height, hints);
+		bitMatrix = this.deleteWhite(bitMatrix);
 		MatrixToImageWriter.writeToPath(bitMatrix, "png", file.toPath());// 输出原图片
+	}
+	
+	private BitMatrix deleteWhite(BitMatrix matrix) {
+	    int[] rec = matrix.getEnclosingRectangle();
+	    int resWidth = rec[2] + 1;
+	    int resHeight = rec[3] + 1;
+
+	    BitMatrix resMatrix = new BitMatrix(resWidth, resHeight);
+	    resMatrix.clear();
+	    for (int i = 0; i < resWidth; i++) {
+	        for (int j = 0; j < resHeight; j++) {
+	            if (matrix.get(i + rec[0], j + rec[1]))
+	                resMatrix.set(i, j);
+	        }
+	    }
+	    
+	    int width = resMatrix.getWidth();
+	    int height = resMatrix.getHeight();
+	    BufferedImage image = new BufferedImage(width, height,
+	            BufferedImage.TYPE_INT_RGB);
+	    for (int x = 0; x < width; x++) {
+	        for (int y = 0; y < height; y++) {
+	            image.setRGB(x, y, resMatrix.get(x, y) ? 0 : 255);// 0-黑色;255-白色
+	        }
+	    }
+	    
+	    return resMatrix;
 	}
 
 }

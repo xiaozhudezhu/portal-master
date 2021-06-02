@@ -36,7 +36,7 @@
                             <i class="icon"></i>
                         </div>
                         <div class="i_name">
-                                                                 天梯蓝(默认)
+                                                                 蓝
                         </div>
                         
                     </div>
@@ -59,7 +59,7 @@
                             <i class="icon"></i>
                         </div>
                         <div class="i_name">
-                                                                天梯红
+                                                                红（默认）
                         </div>
                         
                     </div>

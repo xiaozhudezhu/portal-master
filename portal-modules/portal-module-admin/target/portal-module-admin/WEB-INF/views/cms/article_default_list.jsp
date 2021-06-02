@@ -47,7 +47,7 @@
                 <div class="n_item
                     <c:if test="${articleQueryDTO.type == 'shenhe' }">current</c:if>
                 ">
-                    <div class="i_default"><a href="${ctx }/cms/article/list?rootColumnId=${articleQueryDTO.rootColumnId}"><span>审核列表（
+                    <div class="i_default"><a href="${ctx }/cms/article/list?type=shenhe&rootColumnId=${articleQueryDTO.rootColumnId}"><span>审核列表（
                     <c:choose>
                       <c:when test="${statisMap.shenheCount != null }">
                          ${statisMap.shenheCount}

@@ -108,13 +108,13 @@ public class GemstoneReportController {
 	public AjaxResult generateFile(String reportId, HttpServletRequest request) {
 		AjaxResult ajaxResult = new AjaxResult();
 		ajaxResult.setSuccess(false);
-		gemstoneReportService.generateFile(reportId, request);
+		gemstoneReportService.generateFile(reportId, true, request);
 		return ajaxResult;
 	}
 	
 	@RequestMapping("/getReportFile")
-	public String getReportFile(HttpServletRequest request, HttpServletResponse response, String reportId) {
-		File file = gemstoneReportService.getReportFile(reportId);
+	public String getReportFile(HttpServletRequest request, HttpServletResponse response, String reportId, boolean isPrint) {
+		File file = gemstoneReportService.getReportFile(reportId, isPrint, request);
 		return this.downLoadFile(file.getAbsolutePath(), file.getName(), "application/pdf", request, response, null);
 	}
 	

@@ -64,7 +64,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td class="l_title w200">二级栏目：<font color="red">*</font></td>
+				<td class="l_title w200">二级栏目：</td>
 				<td>
 					<div class="J_toolsBar fl">
 					  <div class="t_opacitySelect ml10">
@@ -126,7 +126,7 @@
 			</tr>
 			
 			<tr>
-				<td class="l_title w200">图片：<a href="${ctx }/cms/article/flashView" target="_blank"><font color="red">无法上传？</font></a></td>
+				<td class="l_title w200">图片：</td>
 				<td>
 					<div class="J_toolsBar fl">
 					    <div class=" w200 ml10">
@@ -162,7 +162,7 @@
 					<div class="J_toolsBar fl">
 					    <div class="t_text w200 ml10">
 							<label> 
-								<input type="text" name="publisher" value="${article.publisher }">
+								<input type="text" name="publisher" value="${article.id == null ? sessionScope.session_login_user.realName : article.publisher }">
 							</label>
 						</div>
 					</div>
@@ -210,7 +210,7 @@
 			$('#editForm').validator({
 				fields : {
 					rootColumnId:'一级栏目:required',
-					leafColumnId:'二级栏目:required',
+					//leafColumnId:'二级栏目:required',
 					title : '标题:required'
 				},
 				valid : function(form){
