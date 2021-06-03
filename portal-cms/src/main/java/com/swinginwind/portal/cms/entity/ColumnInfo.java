@@ -1,10 +1,13 @@
 package com.swinginwind.portal.cms.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.swinginwind.portal.common.entity.BaseEntity;
 /**
@@ -46,6 +49,9 @@ public class ColumnInfo extends BaseEntity{
 	
 	//父级栏目
 	private ColumnInfo parent;
+	
+	@Transient
+	private List<ColumnInfo> children;
 	
 	//渠道
 	private Integer channel;
@@ -124,6 +130,21 @@ public class ColumnInfo extends BaseEntity{
 
 	public void setOrderNo(Integer orderNo) {
 		this.orderNo = orderNo;
+	}
+
+	/**
+	 * @return the children
+	 */
+	@Transient
+	public List<ColumnInfo> getChildren() {
+		return children;
+	}
+
+	/**
+	 * @param children the children to set
+	 */
+	public void setChildren(List<ColumnInfo> children) {
+		this.children = children;
 	}
 
 }

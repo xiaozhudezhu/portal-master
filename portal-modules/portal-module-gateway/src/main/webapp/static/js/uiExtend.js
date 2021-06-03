@@ -5,50 +5,6 @@
 jc.uiExtend("header", {
     rootColumnId: jc.param.get("rootColumnId"),
     $menu: null,
-    updateMenu: function () {
-        var _this = this;
-
-        var html = '';
-
-        window.resource("cmsApiColumnList", {
-            level: 1
-        }, function (data) {
-
-            var menuData = {};
-
-            if (!data.length) return false;
-
-            for (var i = 0, l = data.length; i < l; i++) {
-                var curData = data[i];
-                var spiltPath = curData.path.split("/");
-                var spiltPathRoot = spiltPath[0];
-                if (!menuData[spiltPathRoot]) {
-                    menuData[spiltPathRoot] = [];
-                }
-                menuData[spiltPathRoot].push(curData);
-            }
-
-            _this.$menu.each(function (i, obj) {
-                var $obj = $(obj);
-
-                var dataRootColumnId = $obj.attr("data-root-column-id");
-
-                var curMenuData = menuData[dataRootColumnId];
-
-                if (!curMenuData) return false;
-
-                for (var i = 0, l = curMenuData.length; i < l; i++) {
-                    $obj.append('<li><a onclick="window.router(\'menuAndTextlist\',{ rootColumnId :\'' + dataRootColumnId + '\' , columnListId : \'' + curMenuData[i].id + '\' })" href="javascript:;">' + curMenuData[i].name + '</a></li>');
-                }
-
-            });
-
-
-        });
-
-
-
-    },
     template: function (data) {
         var html = ''
 
@@ -96,34 +52,19 @@ jc.uiExtend("header", {
             html += '<li data-current="' + (curDataId) + '" class="dropdown ' + (currentClass) + '">';
             html += '<a href="javascript:;" onclick="window.router(\'' + (routerName) + '\',{rootColumnId:\'' + (curDataId) + '\'},true)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' + (curDataName) + '<span class="caret"></span><span class="underline"></span></a>';
 
-            html += '<ul data-root-column-id="' + curDataId + '" data-level="1" class="dropdown-menu" ' + (i == 0 ? 'style="display:none;"' : "") + '>';
-
-            /*
-            html += '<li><a href="javascript:;">学校简介</a></li>';
-            html += '<li><a href="javascript:;">学校领导</a></li>';
-            html += '<li><a href="javascript:;">校长寄语</a></li>';
-            html += '<li><a href="javascript:;">组织机构</a></li>';
-            html += '<li><a href="javascript:;">办学成就</a></li>';
-            html += '<li><a href="javascript:;">领导关怀</a></li>';
-            html += '<li><a href="javascript:;">校园风光</a></li>';
-            */
-
-
-            html += '</ul>';
-
+            
+            if(i != 0 && curData && curData.children && curData.children.length > 0) {
+            	html += '<ul data-root-column-id="' + curDataId + '" data-level="1" class="dropdown-menu">';
+            	for(var j = 0; j < curData.children.length; j ++)
+                    html += '<li><a href="javascript:;" onclick="window.router(\'' + (routerName) + '\',{rootColumnId:\'' + (curDataId) + '\', columnListId : \'' + curData.children[j].id + '\' },true)">' + (curData.children[j].name) + '</a></li>';
+            	html += '</ul>';
+            }
             html += '</li>';
-
         }
-
-
-
         html += '</ul>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
-
-
-
         return html;
     },
     setup: function (data) {
@@ -133,7 +74,6 @@ jc.uiExtend("header", {
         this.getTemplate(data, function (html) {
             _this.$element.html(html);
             _this.$menu = _this.$element.find(".dropdown-menu");
-            _this.updateMenu();
         });
 
         this.$element.on("mouseover", ".dropdown", function () {
@@ -173,14 +113,23 @@ jc.uiExtend("footer", {
 
         html += '<div class="hidden-print">';
         html += '<div class="container">';
+        html += '<div class="row text-center" style="height:500px;">';
+        html += '<h2>SUBMIT INFORMATION</h2><h4 class="underline"></h4>';
+        
+        html += '<input class="form-control" placeholder="Name" />';
+        html += '<input class="form-control" placeholder="Email address" />';
+        html += '<input class="form-control" placeholder="Telephone" />';
+        html += '<input class="form-control" placeholder="Region" />';
+        html += '<button type="submit" class="btn btn-default">&nbsp;Submit&nbsp;</button>'
+        html += '</div>';
         html += '<div class="row">';
-        html += '<div class="col-md-5 col-sm-12">';
-        html += '<h4>关于 天梯</h4>';
-        html += '<p class="mt20"><i class="icon"></i>地址：广东省广州市天河区五山路381号</p>'
-        html += '<p><i class="icon"></i>邮箱：xuzhexu@139.com</p>'
+        html += '<div class="col-md-6 col-sm-12">';
+        html += '<h2>MAPLE GEMRESEARCH LAB NORTH AMERICA</h2>';
+        html += '<img class="logo-big" src="../../static/images/logo-big.png">'
+        //html += '<p></p>'
         html += '</div>';
 
-        html += '<div class="col-md-3 col-sm-12">';
+        html += '<div class="col-md-6 col-sm-12">';
         html += '<h4>网站链接</h4>';
         html += '<ul class="list-unstyled list-inline">';
 
@@ -189,83 +138,25 @@ jc.uiExtend("footer", {
             var curData = data[i];
             var curDataId = curData.id;
             var curDataName = curData.name;
-            html += '<li><a onclick="window.router(\'menuAndTextlist\',{rootColumnId:\'' + (curDataId) + '\'},true)"  href="javascript:;" target="_blank">' + curDataName + '</a></li>';
+            html += '<li><a onclick="window.router(\'menuAndTextlist\',{rootColumnId:\'' + (curDataId) + '\'},true)"  href="javascript:;" target="_blank">' + curDataName + '</a>';
+            if(i != 0 && curData && curData.children && curData.children.length > 0) {
+            	html += '<ul class="list-unstyled list-small" data-root-column-id="' + curDataId + '" data-level="1">';
+            	for(var j = 0; j < curData.children.length; j ++)
+                    html += '<li><a href="javascript:;" onclick="window.router(\'menuAndTextlist\',{rootColumnId:\'' + (curDataId) + '\', columnListId : \'' + curData.children[j].id + '\' },true)">' + (curData.children[j].name) + '</a></li>';
+            	html += '</ul>';
+            }
+            html += '</li>';
         }
        
-
-
         html += '</ul>';
         html += '</div>';
-
-        html += '<div class="col-md-2 col-sm-12">';
-        html += '<div class="mt20 text-center">';
-        html += '<img style="width:120px;" src="../../static/images/code_1.png">';
-        html += '<p>(微信打赏)</p>';
-        html += '</div>';
-        html += '</div>';
-
         html += '</div>';
         html += '</div>';
         html += '<div class="copy-right">';
-        html += '<span>© 2013-2017</span>';
-        html += '版权所有 天梯 Copyright © 1998 - 2017 Tencent. All Rights Reserved';
-        html += '<span>粤公网安备11010802014853</span>';
+        html += '';
+        html += '@2019-2021 Maple gem research Lab. ofamerica lnc.MGL is a nonprofit organization.All rights reserved,info@maplegemlab.com';
         html += '</div>';
         html += '</div>';
-
-
-
-
-        /*
-        <div class="hidden-print">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-5 col-sm-12">
-                        <h4>关于 BootCDN</h4>
-                        <p>BootCDN 是 <a href="http://www.bootcss.com/" target="_blank">Bootstrap 中文网</a>和<a href="https://www.upyun.com/" target="_blank">又拍云</a>共同支持并维护的前端开源项目免费 CDN 服务，由<a href="https://www.upyun.com/" target="_blank">又拍云</a>提供全部 CDN 支持，致力于为 Bootstrap、jQuery、Angular 一样优秀的前端开源项目提供稳定、快速的免费 CDN 服务。BootCDN 所收录的开源项目主要同步于 <a href="https://github.com/cdnjs/cdnjs" target="_blank">cdnjs</a> 仓库。</p><p>自2013年10月31日上线以来已经为上万家网站提供了稳定、可靠的免费 CDN 服务。</p><p>反馈或建议请发送邮件至：cdn@bootcss.com</p>
-                    </div>
-                    <div class="col-md-2 col-sm-12">
-                        <h4>友情链接</h4>
-                        <ul class="list-unstyled">
-                            <li><a href="http://www.bootcss.com/" target="_blank">Bootstrap 中文网</a></li>
-                            <li><a href="http://www.ghostchina.com/" target="_blank">Ghost 中国</a></li>
-                            <li><a href="http://www.golaravel.com/" target="_blank">Laravel 中文网</a></li>
-                            <li><a href="http://www.jquery123.com/" target="_blank">jQuery 中文 API</a></li>
-                            <li><a href="http://pkg.phpcomposer.com/" target="_blank">Packagist 中国镜像</a></li>
-                            <li><a href="http://www.phpcomposer.com/" target="_blank">Composer 中文网</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <h4>我们用到的技术</h4>
-                        <ul class="list-unstyled list-inline">
-                            <li><a href="http://www.bootcss.com/" target="_blank">Bootstrap</a></li>
-                            <li><a href="http://www.ghostchina.com/" target="_blank">Ghost</a></li>
-                            <li><a href="http://www.jquery123.com/" target="_blank">jQuery</a></li>
-                            <li><a href="http://babeljs.cn/" target="_blank">Babeljs</a></li>
-                            <li><a href="http://lodashjs.com/" target="_blank">Lodash</a></li>
-                            <li><a href="http://www.nodeapp.cn/" target="_blank">Node</a></li>
-                            <li><a href="http://www.gruntjs.net/" target="_blank">Grunt</a></li>
-                            <li><a href="http://www.gulpjs.com.cn/" target="_blank">Gulp</a></li>
-                            <li><a href="http://www.npmjs.com.cn/" target="_blank">NPM</a></li>
-                            <li><a href="https://webpackjs.com/" target="_blank">webpack</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-md-2 col-sm-12">
-                        <h4>动力源自</h4><p>
-                            <a href="https://www.upyun.com/" style="border-bottom: none" target="_blank"><img src="/assets/img/Upyun_LOGO_300.png" style="width: 120px" alt="又拍云存储"></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="copy-right">
-                <span>© 2013-2017</span>
-                <a href="http://www.miibeian.gov.cn/" target="_blank">京ICP备11008151号</a>
-                <span>京公网安备11010802014853</span>
-            </div>
-        </div>
-        */
-
-
         return html;
 
 
@@ -345,9 +236,9 @@ jc.uiExtend("titleStyle1", {
         var html = '';
 
         html += '<div class="page-header clearfix">';
-        html += '<div class="pull-left">';
-        html += '<i></i>';
+        html += '<div class="text-center">';
         html += '<h4>' + this.getString(data.data_title_text) + '</h4>';
+        html += '<i class="underline"></i>';
         html += '</div>';
         html += '<div class="pull-right"><a href="' + this.getString(data.data_more_href) + '" title="' + this.getString(data.data_more_text) + '">' + this.getString(data.data_more_text) + '</a></div>';
         html += '</div>';
@@ -456,8 +347,8 @@ jc.uiExtend("textList", {
                 next_text: "后一页",
                 current_page: _this.ajaxData.currentPage - 1
             });
-            if (data.list.length < 1) {
-                this.$page.hide();
+            if (data.totalPage < 2) {
+                _this.$page.hide();
             }
         });
 
@@ -491,6 +382,63 @@ jc.uiExtend("textList", {
         this.$page = this.$element.find(".t_page");
 
 
+        this.update();
+    }
+
+});
+
+
+jc.uiExtend("reportList", {
+    ajaxData: {
+        no: null,
+        pageSize: 0,
+        currentPage: 1
+    },
+    change: function (index, panel, _this) {
+        _this.ajaxData.currentPage = index + 1;
+        _this.update();
+    },
+    update: function () {
+        var _this = this;
+        this.ajaxData.no = this.$element.attr("data-id");
+        this.ajaxData.pageSize = this.$element.attr("data-page-size") || 10;
+        var data_path = this.$element.attr("data-path");
+        window.resource(data_path, this.ajaxData, function (data) {
+            _this.setup(data);
+            _this.$page.pagination(data.totalCount, {
+                proxy: _this,
+                num_edge_entries: 1, //边缘页数
+                num_display_entries: 6, //主体页数
+                callback: _this.change,
+                items_per_page: _this.ajaxData.pageSize, //每页显示1项
+                prev_text: "前一页",
+                next_text: "后一页",
+                current_page: _this.ajaxData.currentPage - 1
+            });
+            if (data.totalPage < 2) {
+                _this.$page.hide();
+            }
+        });
+
+    },
+    setup: function (data) {
+
+        var _this = this;
+
+        var id = this.$element.attr("data-id");
+
+        if (id) {
+            data.id = id;
+        }
+        _this.getTemplate(data, function (html) {
+            _this.$list.html(html);
+        });
+    },
+    init: function () {
+        this.$element.append(jc.createDOM({ classname: "t_list" }));
+        this.$element.append(jc.createDOM({ classname: "t_page" }));
+        this.$list = this.$element.find(".t_list");
+        this.$page = this.$element.find(".t_page");
         this.update();
     }
 

@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +35,7 @@ import com.swinginwind.portal.common.config.AppConfig;
 import com.swinginwind.portal.common.dao.CustomBaseSqlDaoImpl;
 import com.swinginwind.portal.common.entity.PageModel;
 import com.swinginwind.portal.common.service.CommonService;
+import com.swinginwind.portal.gemstone.WebHelper;
 import com.swinginwind.portal.gemstone.dao.GemstoneReportDao;
 import com.swinginwind.portal.gemstone.dto.GemstoneReportQueryDTO;
 import com.swinginwind.portal.gemstone.entity.GemstoneReport;
@@ -44,7 +44,7 @@ import com.swinginwind.portal.gemstone.entity.GemstoneReportImage;
 @Service
 public class GemstoneReportService extends CommonService<GemstoneReport, String> {
 
-	@Autowired
+	@Autowired(required = false)
 	private AppConfig appConfig;
 
 	@Autowired
@@ -56,7 +56,7 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 	}
 
 	@SuppressWarnings("unchecked")
-	public PageModel<GemstoneReport> queryGemstoneReportPage(GemstoneReportQueryDTO dto) {
+	public PageModel<GemstoneReport> queryGemstoneReportPage(GemstoneReportQueryDTO dto, boolean filterCreateUser) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		StringBuilder hql = new StringBuilder();
 		hql.append(" select u from GemstoneReport u where 1=1 ");
@@ -68,20 +68,30 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 			hql.append(" and u.type = :type ");
 			params.put("type", dto.getType());
 		}
+		if (filterCreateUser && !WebHelper.hasRole("role_admin")) {
+			hql.append(" and u.createUser.id = :createUser");
+			params.put("createUser", WebHelper.getUser().getId());
+		}
 		hql.append(" order by u.createDate desc ");
 		return customBaseSqlDaoImpl.queryForPageWithParams(hql.toString(), params, dto.getCurrentPage(),
 				dto.getPageSize());
 	}
 
 	public void saveGemstoneReport(GemstoneReport report, HttpServletRequest request) {
-		if (StringUtils.isEmpty(report.getId()))
+		if (StringUtils.isEmpty(report.getId())) {
+			report.setCreateUser(WebHelper.getUser());
+			report.setUpdateUser(WebHelper.getUser());
 			report = this.save(report);
+		}
+			
 		else {
+			report.setUpdateUser(WebHelper.getUser());
 			GemstoneReport report1 = this.find(report.getId());
 			if (report1 != null) {
 				report.setAuditFlag(report1.getAuditFlag());
 				report.setDeleteFlag(report1.getDeleteFlag());
 				report.setType(report1.getType());
+				report.setCreateUser(report1.getCreateUser());
 				this.update(report);
 			}
 		}

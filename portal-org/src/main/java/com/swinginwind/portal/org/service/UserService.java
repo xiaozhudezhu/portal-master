@@ -14,6 +14,7 @@ import com.swinginwind.portal.common.service.CommonService;
 import com.swinginwind.portal.org.dao.UserDao;
 import com.swinginwind.portal.org.dto.UserQueryDTO;
 import com.swinginwind.portal.org.entity.Resource;
+import com.swinginwind.portal.org.entity.Role;
 import com.swinginwind.portal.org.entity.User;
 
 
@@ -56,6 +57,10 @@ public class UserService extends CommonService<User,String>{
 	
 	public List<Resource> findResourcesByUserId(String userId) {
 		return userDao.findResourcesByUserId(userId);
+	}
+	
+	public List<Role> findRolesByUserId(String userId) {
+		return userDao.findRolesByUserId(userId);
 	}
 	
 	public Map<String, Object> findResourceMap(String userId){

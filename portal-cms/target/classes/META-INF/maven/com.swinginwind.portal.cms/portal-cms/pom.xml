@@ -18,8 +18,8 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.swinginwind.portal.common</groupId>
-			<artifactId>portal-common</artifactId>
+			<groupId>com.swinginwind.portal.org</groupId>
+			<artifactId>portal-org</artifactId>
 			<version>${portal.version}</version>
 		</dependency>
 		<dependency>

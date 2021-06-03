@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.swinginwind.portal.common.entity.BaseEntity;
+import com.swinginwind.portal.org.entity.User;
 
 @Entity
 @Table(name = "gemstone_report")
@@ -64,9 +66,9 @@ public class GemstoneReport extends BaseEntity {
 	
 	private String clarityFeature;
 	
-	private String createUser;
+	private User createUser;
 	
-	private String updateUser;
+	private User updateUser;
 	
 	private Set<GemstoneReportImage> images;
 
@@ -250,21 +252,22 @@ public class GemstoneReport extends BaseEntity {
 		this.clarityFeature = clarityFeature;
 	}
 
-	@Column(name = "create_user")
-	public String getCreateUser() {
+	@ManyToOne
+	@JoinColumn(name = "create_user")
+	public User getCreateUser() {
 		return createUser;
 	}
 
-	public void setCreateUser(String createUser) {
+	public void setCreateUser(User createUser) {
 		this.createUser = createUser;
 	}
-
-	@Column(name = "update_user")
-	public String getUpdateUser() {
+	@ManyToOne
+	@JoinColumn(name = "update_user")
+	public User getUpdateUser() {
 		return updateUser;
 	}
 
-	public void setUpdateUser(String updateUser) {
+	public void setUpdateUser(User updateUser) {
 		this.updateUser = updateUser;
 	}
 

@@ -20,7 +20,7 @@
 	<description>Spring公共配置 </description>
 
 	<!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
-	<context:component-scan base-package="com.jeff.tianti"/>
+	<context:component-scan base-package="com.swinginwind.portal"/>
 
 	<!-- Jpa Entity Manager 配置 -->
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
@@ -28,7 +28,7 @@
 		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
 		<property name="packagesToScan">
 			<list>
-				<value>com.jeff.tianti</value>
+				<value>com.swinginwind.portal</value>
 				<!-- <value>com.vision.edu</value> -->
 			</list>
 		</property>
@@ -65,7 +65,7 @@
 	</bean>
 
 	<!-- Spring Data Jpa配置 -->
- 	<jpa:repositories base-package="com.jeff.tianti"  transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
+ 	<jpa:repositories base-package="com.swinginwind.portal"  transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
    
 	<!-- Jpa 事务配置 -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -88,7 +88,7 @@
 		</tx:attributes>
 	</tx:advice>
 	<aop:config>
-		<aop:pointcut expression="execution (* com.jeff..service..*.*(..))" id="txPointcut"/>
+		<aop:pointcut expression="execution (* com.swinginwind..service..*.*(..))" id="txPointcut"/>
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
 	</aop:config>
 

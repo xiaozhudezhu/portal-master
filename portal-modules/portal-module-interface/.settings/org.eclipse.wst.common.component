@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="tianti-module-interface">
+    <wb-module deploy-name="portal-module-interface">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
@@ -10,7 +10,10 @@
         <dependent-module archiveName="portal-cms-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/portal-cms/portal-cms">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <property name="java-output-path" value="/tianti-module-interface/target/classes"/>
+        <dependent-module archiveName="portal-org-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/portal-org/portal-org">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/portal-module-interface/target/classes"/>
         <property name="context-root" value="portal-module-interface"/>
     </wb-module>
 </project-modules>

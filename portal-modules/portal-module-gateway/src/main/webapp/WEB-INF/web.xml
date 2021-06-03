@@ -6,9 +6,9 @@
 	
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>web.tiantigateway.root</param-value>
+		<param-value>web.portalgateway.root</param-value>
 	</context-param>
 		
-	<display-name>tianti-module-gateway</display-name>
+	<display-name>portal-module-gateway</display-name>
 	
 </web-app>

@@ -144,7 +144,7 @@
 						<div class="t_img w100 ml10">
 						    <c:choose>
 						        <c:when test="${article.coverImageUrl != null && article.coverImageUrl != ''}">
-						            <img src="${ctx }/upload/getImage?imagePath=${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
+						            <img src="/uploadfile/${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
 						        </c:when>
 						        <c:otherwise>
 						            <img src="${ctx }/static/images/J_null.png" id="attachURL" width="100px" height="100px" />
@@ -218,7 +218,8 @@
 						success : function(result){
 							if(result.success){
 								layer.alert('保存成功');
-								window.location.href="${ctx}/cms/article/list"
+								window.history.back();
+								//window.location.href="${ctx}/cms/article/list"
 							}
 						}
 					});
@@ -227,7 +228,7 @@
 		});
             
        function myBack(){
-    	   window.location.href="${ctx}/cms/article/list";
+    	   window.history.back();
        }
        
        function mySubmit(){
@@ -307,7 +308,7 @@
 			'fileType'  : 'image/*',//只允许图片格式的文件
 			'onUploadSuccess' : function(file, data, response) {
 					if(data != null){
-						var attachUrl = '${pageContext.request.contextPath}' + data;								
+						var attachUrl = '/uploadfile/' + data;								
 						$("#attachURL").attr('src',attachUrl); 
 						$("#coverImageUrl").val(data);
 					}

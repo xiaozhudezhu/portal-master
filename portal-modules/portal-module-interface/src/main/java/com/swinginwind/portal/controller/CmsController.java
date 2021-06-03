@@ -72,6 +72,16 @@ public class CmsController {
 		columnInfoQueryDTO.setRootColumnId(rootColumnId);
 		columnInfoQueryDTO.setIsRootColumnLike(isRootColumnLike);
 		List<ColumnInfo> list = this.columnInfoService.queryColumnInfoList(columnInfoQueryDTO);
+		if(level != null && level == 0) {
+			for(ColumnInfo info : list) {
+				columnInfoQueryDTO = new ColumnInfoQueryDTO();
+				columnInfoQueryDTO.setRootColumnId(info.getId());
+				columnInfoQueryDTO.setIsRootColumnLike(false);
+				info.setChildren(this.columnInfoService.queryColumnInfoList(columnInfoQueryDTO));
+				for(ColumnInfo info1 : info.getChildren())
+					info1.setParent(null);
+			}
+		}
 		ajaxResult.setSuccess(true);
 		ajaxResult.setData(list);
 		return ajaxResult;

@@ -28,6 +28,7 @@
         html += '<div class="item ' + (i == 0 ? 'active' : '') + '">';
         var coverImageUrl = list[i].coverImageUrl;
         html += '<a href="javascript:;"><img src="' + (coverImageUrl ? window.serverUploadPath + coverImageUrl : "") + '" /></a>';
+        html += ' <div class="carousel-caption"><h3>' + list[i].title + '</h3></div>'
         html += '</div>';
     }
 

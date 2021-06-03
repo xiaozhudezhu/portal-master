@@ -1,32 +1,32 @@
 ﻿	/// <reference path="common.js" />
 	//定义几个项目的全局变量[如果用户修改了项目的名称，请更新以下几个变量]
-    var tiantiAdminName = 'tianti-module-admin';
-    var tiantiInterfaceName = 'tianti-module-interface';
-    var tiantiGateway = 'tianti-module-gateway';
+    var portalAdminName = 'portal-module-admin';
+    var portalInterfaceName = 'portal-module-interface';
+    var portalGateway = 'portal-module-gateway';
     
 	window.isLocalhost = window.location.hostname == "localhost";
 	window.ctx = "";
 	if (window.location.protocol == "file:") {
-	    var url = window.location.href.split("/tianti/");
+	    var url = window.location.href.split("/portal/");
 	    if (url.length == 2) {
 	        window.ctx = url[0] + "/";
 	    }
 	}else {
-	    window.ctx = window.location.protocol + "//" + window.location.host + "/"+tiantiGateway+"/";
+	    window.ctx = window.location.protocol + "//" + window.location.host + "/"+portalGateway+"/";
 	}
 	
-	window.root = window.ctx + "tianti/";
+	window.root = window.ctx + "portal/";
 	window.static = window.ctx + "static/";
 	window.notImgUrl = window.static + "images/img_null.png";
 	
 	window.server = window.location.protocol + "//" + window.location.host +"/";
-	window.serverPath = window.server + tiantiInterfaceName+"/";
+	window.serverPath = window.server + portalInterfaceName+"/";
 	//后台上传的图片地址
-	window.serverUploadPath = window.server + tiantiAdminName+"/";
+	window.serverUploadPath = window.server + "/uploadfile";
 	
 	jc.require.url.push(window.static + "js/jquery.pagination.js");
 	jc.require.url.push(window.static + "js/jquery.nicescroll.min.js");
-	jc.require.url.push(window.static + "css/common.css");
+	jc.require.url.push(window.static + "css/common2.css");
 	jc.require.url.push(window.static + "js/uiExtend.js");
 	
 	jc.require.success = function () {
@@ -47,7 +47,8 @@
 	    cmsApiArticleList: window.serverPath + "cms/api/article/list",
 	    cmsApiArticleDetail: window.serverPath + "cms/api/article/detail",
 	    cmsApiArticleNext: window.serverPath + "cms/api/article/next",
-	    cmsApiArticlePre: window.serverPath + "cms/api/article/pre"
+	    cmsApiArticlePre: window.serverPath + "cms/api/article/pre",
+	    reportApiList: window.serverPath + "gr/api/list"
 	}
 	
 	window.arraySortASC = function (array, keyName) {
