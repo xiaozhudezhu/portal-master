@@ -11,7 +11,11 @@
 <script src="${ctx}/static/js/rfid/interface.js"></script>
 
 </head>
-<link href="${ctx }/static/plugins/chosen_v1.6.2/chosen.css" rel="stylesheet" />
+<link href="${ctx }/static/plugins/ZdCascader/ZdCascader.css" rel="stylesheet" />
+<script src="${ctx}/static/plugins/ZdCascader/ZdCascader.js"></script>
+<link href="${ctx}/static/plugins/select2/css/select2.min.css" rel="stylesheet" />
+<script src="${ctx}/static/plugins/select2/js/select2.full.min.js"></script>
+
 <body <%@ include file="../common/skin.jsp" %>>
 	<%@ include file="../common/head.jsp" %>
     <%@ include file="../common/menu.jsp" %>
@@ -25,12 +29,14 @@
                 </div>
               
                 <div class="t_label">&nbsp;证书类型</div>
-				<div class="t_text w100 ml10" style="padding:0">
-					<select name="type" style="width:100%;height:100%;border:0">
+				<div class="t_text w200 ml10" style="padding:0">
+					<%-- <select name="type" style="width:100%;height:100%;border:0">
 						<option value="">请选择</option>
 						<option value="1" <c:if test="${queryDTO.type == 1 }">selected="selected"</c:if>>宝石</option>
 						<option value="2" <c:if test="${queryDTO.type == 2 }">selected="selected"</c:if>>钻石</option>
-					</select>
+					</select> --%>
+					<input id="reportQueryTypeNameInput" type="text" name="typeName" />
+					<input id="reportQueryTypeValueInput" type="hidden" name="type" value="${queryDTO.type }"/>
                 </div>
                 <div class="t_button mgl30">
                		<a class="abtn red" href="javascript:myQuery();">
@@ -42,7 +48,7 @@
                		   <i class="icon"></i>新增
                		</a>
                	</div>
-               	<div class="t_button ml10">
+               	<!-- <div class="t_button ml10">
                		<a class="abtn maxblue" href="javascript:myExport();">
                			<i class="icon"></i>导出
                		</a>
@@ -51,7 +57,7 @@
                		<a class="abtn maxblue" href="javascript:myExport();">
                			<i class="icon"></i>导入
                		</a>
-               	</div>
+               	</div> -->
                	<div class="t_button ml10">
                	<a class="abtn gray" href="${ctx}/static/js/rfid/reader_setup.msi">
                		<i class="icon"></i>下载读卡器插件
@@ -108,14 +114,7 @@
 		                                 </td>
 		                                 <td>
 		                                 	<div class="t_text tc">
-		                                 		<c:choose>
-		                                         	<c:when test="${u.type eq '1' }">
-		                                         		宝石
-		                                         	</c:when>
-		                                         	<c:when test="${u.type eq '2' }">
-		                                         		钻石
-		                                         	</c:when>
-		                                         </c:choose>
+		                                 		${u.type.name }
 		                                 	</div>
 		                                 </td>
 		                                 <td>
@@ -186,7 +185,6 @@
 		</div>
     </div>
 <iframe style="display:none" id="printIframe"></iframe>
-<script src="${ctx }/static/plugins/chosen_v1.6.2/chosen.jquery.js"></script>    
 <script type="text/javascript">
 	function myEdit(id){
 		var loadIdx = layer.load();
@@ -196,7 +194,7 @@
 		}else{
 			title = '修改证书';
 		}
-		$.post('${ctx}/gr/dialog/edit?reportId='+id, {}, function(str){
+		$.get('${ctx}/gr/dialog/edit?reportId='+id, {}, function(str){
 			
 			layer.close(loadIdx);
 			
@@ -265,6 +263,19 @@
 		})
 		
 	}
+	
+	function initQueryType() {
+		$.get('${ctx}/gr/getTypeSelect', {}, function(data) {
+			$('#reportQueryTypeNameInput').zdCascader({
+				data: data.data,
+				onChange: function(s, data) {
+					$('#reportQueryTypeValueInput').val(data.value);
+				}
+			});
+			$('#reportQueryTypeNameInput').val('${queryDTO.typeName }');
+		});
+	}
+	initQueryType();
 </script>
 
 

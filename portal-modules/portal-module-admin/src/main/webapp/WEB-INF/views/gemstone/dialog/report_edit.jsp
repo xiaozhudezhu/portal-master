@@ -11,19 +11,32 @@ function removeImage(ele) {
 	$(ele).parent().remove();
 }
 
-function changeReportType(type) {
-	if(type == '1') {
+function changeReportType() {
+	var type = $('#reportTypeValueInput').val();
+	if(!type)
+		return;
+	var rootType = type.substring(0, 1);
+	if(rootType == '1') {
 		$('#reportType2Table').hide();
 		$('#reportType1Table').show();
 		$('#reportType1Table :input').removeAttr('disabled');
 		$('#reportType2Table :input').attr('disabled', 'disabled');
 	}
-	else if(type == '2') {
+	else if(rootType == '2') {
 		$('#reportType1Table').hide();
 		$('#reportType2Table').show();
 		$('#reportType2Table :input').removeAttr('disabled');
 		$('#reportType1Table :input').attr('disabled', 'disabled');
 	}
+	$('#editForm .select-kv:enabled').each(function() {
+		var $this = $(this);
+		$.get('${ctx}/gr/getKvs', { type: $('#reportTypeValueInput').val(), typeId: $this.attr('kvTypeId') }, function(result) {
+			$.each(result.data, function(i, item) {
+				item.text = item.name;
+			});
+			$this.select2({data: result.data, tags: true});
+		});
+	});
 	
 }
 //表单验证
@@ -91,6 +104,21 @@ $(function(){
 		 clearInterval(readCardTimer);
 	 });
 	
+	function initReportType() {
+		$.get('${ctx}/gr/getTypeSelect', {}, function(data) {
+			$('#reportTypeNameInput').zdCascader({
+				data: data.data,
+				onChange: function(s, data) {
+					$('#reportTypeValueInput').val(data.value);
+					changeReportType();
+				}
+			});
+			$('#reportTypeNameInput').val('${report.type.name }');
+		});
+	}
+	initReportType();
+	changeReportType();
+	
 });
 
 </script>
@@ -111,9 +139,11 @@ $(function(){
 						<td class="l_title" width="15%"><b class="cRed">*</b> 类型</td>
                          <td width="35%">
                              <div class="J_toolsBar fl">
-                                 <div class="t_check ml10">
-                                 	<label><input name="type" type="radio" value="1" onclick="changeReportType('1')" <c:if test="${report.type == 1 || report.type == null }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if> />宝石</label> 
-						 			<label><input name="type" type="radio" value="2" onclick="changeReportType('2')" <c:if test="${report.type == 2 }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if>/>钻石</label> 
+                                 <div class="t_check w222 ml10">
+                                 	<%-- <label><input name="type" type="radio" value="1" onclick="changeReportType('1')" <c:if test="${report.type == 1 || report.type == null }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if> />宝石</label> 
+						 			<label><input name="type" type="radio" value="2" onclick="changeReportType('2')" <c:if test="${report.type == 2 }">checked="checked"</c:if>  <c:if test="${report.type != null }">disabled</c:if>/>钻石</label>  --%>
+                                 	<input id="reportTypeNameInput" type="text" name="typeName" />
+									<input id="reportTypeValueInput" type="hidden" name="type.id" value="${report.type.id }"/>
                                  </div>
                              </div>
                          </td>
@@ -158,9 +188,7 @@ $(function(){
                          </td>
                      </tr>
             	</table>
-            	<c:if test="${report.type == 1 || report.type == null }">
-            	<table id="reportType1Table" style="width: 100%">
-					
+            	<table id="reportType1Table" style="width: 100%; <c:if test="${report.type.code.startsWith('2')}">display:none</c:if>">
 					 <tr>
 						<td class="l_title" width="15%"><b class="cRed">*</b> 重量(CT)</td>
                          <td width="35%">
@@ -209,8 +237,8 @@ $(function(){
 						<td class="l_title "><b class="cRed">*</b> 颜色</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="color" data-rule="颜色:required;color;" value="${report.color }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="1-Color" name="color" data-rule="颜色:required;color;" value="${report.color }" />
                                  </div>
                              </div>
                          </td>
@@ -224,15 +252,13 @@ $(function(){
                          </td>
                      </tr>
                 </table>
-                </c:if>
-                <c:if test="${report.type == 2 || report.type == null }">
-				<table id="reportType2Table" style="width: 100%; <c:if test="${report.type == null }">display:none</c:if>">
+				<table id="reportType2Table" style="width: 100%; <c:if test="${report.type.code.startsWith('1') || report.type == null }">display:none</c:if>">
                      <tr>
 						<td class="l_title" width="15%"><b class="cRed">*</b> 形状/切割款式</td>
                          <td width="35%">
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="cut" data-rule="形状:required;cut;" value="${report.cut }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="2-CUT" name="cut" data-rule="形状:required;cut;" value="${report.cut }" />
                                  </div>
                              </div>
                          </td>
@@ -249,16 +275,16 @@ $(function(){
 						<td class="l_title "><b class="cRed">*</b> 颜色</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="colorGrade" data-rule="颜色:required;colorGrade;" value="${report.colorGrade }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="text" name="colorGrade" class="w222 select-kv" kvTypeId="2-Color" data-rule="颜色:required;colorGrade;" value="${report.colorGrade }" />
                                  </div>
                              </div>
                          </td>
                          <td class="l_title "><b class="cRed">*</b> 净度</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="clarityGrade" data-rule="净度:required;clarityGrade;" value="${report.clarityGrade }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="2-Clarity" name="clarityGrade" data-rule="净度:required;clarityGrade;" value="${report.clarityGrade }" />
                                  </div>
                              </div>
                          </td>
@@ -293,16 +319,16 @@ $(function(){
 						<td class="l_title "><b class="cRed">*</b> 抛光度</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="polish" data-rule="抛光度:required;polish;" value="${report.polish }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="2-Polish" name="polish" data-rule="抛光度:required;polish;" value="${report.polish }" />
                                  </div>
                              </div>
                          </td>
                          <td class="l_title "><b class="cRed">*</b> 对称性</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="symmetry" data-rule="对称性:required;symmetry;" value="${report.symmetry }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="2-Symmetry" name="symmetry" data-rule="对称性:required;symmetry;" value="${report.symmetry }" />
                                  </div>
                              </div>
                          </td>
@@ -311,8 +337,8 @@ $(function(){
 						<td class="l_title "><b class="cRed">*</b> 荧光</td>
                          <td>
                              <div class="J_toolsBar fl">
-                                 <div class="t_text w200 ml10">
-                                     <input type="text" name="fluorescence" data-rule="荧光:required;fluorescence;" value="${report.fluorescence }" />
+                                 <div class="t_select w222 ml10">
+                                     <input type="hidden" class="w222 select-kv" kvTypeId="2-Fluorescence" name="fluorescence" data-rule="荧光:required;fluorescence;" value="${report.fluorescence }" />
                                  </div>
                              </div>
                          </td>
@@ -336,7 +362,6 @@ $(function(){
                          </td>
                      </tr>
 				</table>
-				</c:if>
 				<table style="width: 100%">
 					<tr>
 						<td class="l_title " width="15%"><b class="cRed">*</b> 图片</td>

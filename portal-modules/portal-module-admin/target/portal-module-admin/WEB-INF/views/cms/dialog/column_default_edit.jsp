@@ -94,6 +94,16 @@
                              </div>
                          </td>
                     </tr>
+                    <tr>
+						<td class="l_title w200"> 页面布局:</td>
+                         <td>
+                             <div class="J_toolsBar fl">
+                                 <div class="t_textarea w300 ml10" style="height: 150px;">
+                                 	<textarea name="layout" maxlength="500" style="height:100%;">${columnInfo.layout }</textarea>
+                                 </div>
+                             </div>
+                         </td>
+                    </tr>
 				</table>
 			</div>
 		</div>

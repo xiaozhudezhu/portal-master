@@ -17,19 +17,10 @@
 			</div>
 			<div data-ui="skinList" class="J_skinList">
                 <div class="s_inner clearfix">
-                    <div data-class="blue" 
-                    <c:choose>
-						<c:when test="${sessionScope.session_login_user.currentSkin != 'skin_blue' }">
-					       class="i_item"
-					     </c:when>
-						<c:otherwise>
-					       class="i_item current"
-					     </c:otherwise>
-					</c:choose>
-                    >
+                    <div data-class="blue" class="i_item" id="skin_blue">
                         <div class="i_picture">
-                            <a href="javascript:;" title="此皮肤为天梯蓝风格">
-                                <img src="${ctx }/static/images/skin/blue.jpg" alt="此皮肤为天梯蓝风格" />
+                            <a href="javascript:;" title="此皮肤为蓝风格">
+                                <img src="${ctx }/static/images/skin/blue.jpg" alt="此皮肤为蓝风格" />
                             </a>
                         </div>
                         <div class="i_mask">
@@ -40,19 +31,10 @@
                         </div>
                         
                     </div>
-                    <div data-class="red" 
-                    <c:choose>
-						<c:when test="${sessionScope.session_login_user.currentSkin == 'skin_red' }">
-					       class="i_item current"
-					     </c:when>
-						<c:otherwise>
-					       class="i_item"
-					     </c:otherwise>
-					</c:choose>
-                    >
+                    <div data-class="red" class="i_item" id="skin_red">
                         <div class="i_picture">
                             <a href="javascript:;">
-                                <img src="${ctx }/static/images/skin/red.jpg" alt="此皮肤为天梯红风格" />
+                                <img src="${ctx }/static/images/skin/red.jpg" alt="此皮肤为红风格" />
                             </a>
                         </div>
                         <div class="i_mask">
@@ -79,6 +61,7 @@
 	</div>
 	<script type="text/javascript">
         $(function () {
+        	$('#<shiro:principal property="currentSkin" defaultValue="skin_blue"/>').addClass('current');
             $(document.body).on("click", ".J_skinList .s_inner .i_item", function () {
                 var data_class = $(this).attr("data-class");
                 if (data_class) {

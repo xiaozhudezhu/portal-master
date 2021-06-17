@@ -58,6 +58,9 @@ public class ColumnInfo extends BaseEntity{
 	
 	//排序
 	private Integer orderNo;
+	
+	//布局样式配置
+	private String layout;
 
 	@Column(length = 20)
 	public String getCode() {
@@ -145,6 +148,21 @@ public class ColumnInfo extends BaseEntity{
 	 */
 	public void setChildren(List<ColumnInfo> children) {
 		this.children = children;
+	}
+
+	/**
+	 * @return the layout
+	 */
+	@Column(name = "layout", length = 512)
+	public String getLayout() {
+		return layout;
+	}
+
+	/**
+	 * @param layout the layout to set
+	 */
+	public void setLayout(String layout) {
+		this.layout = layout;
 	}
 
 }

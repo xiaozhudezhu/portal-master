@@ -15,6 +15,9 @@ public class ColumnInfoQueryDTO extends CommonQueryDTO{
 	//父级栏目ID
 	private String rootColumnId;
 	
+	//栏目ID
+	private String columnId;
+	
 	//所属层级
 	private Integer level;
 	
@@ -73,6 +76,20 @@ public class ColumnInfoQueryDTO extends CommonQueryDTO{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return the columnId
+	 */
+	public String getColumnId() {
+		return columnId;
+	}
+
+	/**
+	 * @param columnId the columnId to set
+	 */
+	public void setColumnId(String columnId) {
+		this.columnId = columnId;
 	}
 
 }

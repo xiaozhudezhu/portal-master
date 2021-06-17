@@ -2,7 +2,7 @@
 	//定义几个项目的全局变量[如果用户修改了项目的名称，请更新以下几个变量]
     var portalAdminName = 'portal-module-admin';
     var portalInterfaceName = 'portal-module-interface';
-    var portalGateway = 'portal-module-gateway';
+    var portalGateway = location.href.indexOf('portal-module-gateway') > 0 ? 'portal-module-gateway' : '';
     
 	window.isLocalhost = window.location.hostname == "localhost";
 	window.ctx = "";
@@ -73,12 +73,7 @@
 	            if (res.success) {
 	                var data = res.data;
 	                fnSuccess(data);
-	                /*if (isLocalhost) {
-	                    console.log("%c isSuccessTrue : " + window.path[path] + "?" + jc.param.stringify(_data), "color: green", data);
-	                }
-	                else {
-	                    console.log("%c isSuccessFail : " + window.path[path] + "?" + jc.param.stringify(_data), "color: red", res.msg);
-	                }*/
+	            
 	            }
 	            else {
 	                alert("isNull : " + window.path[path] + "?" + jc.param.stringify(_data));
@@ -109,8 +104,8 @@
 	    if (resultParam) {
 	        resultParam = "?" + resultParam;
 	    }
-	    if (routerListName == "index") {
+	    /*if (routerListName == "index") {
 	        resultParam = "";
-	    }
+	    }*/
 	    window.location.href = window.routerList[routerListName] + resultParam;
 	}

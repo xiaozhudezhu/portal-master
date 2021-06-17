@@ -78,6 +78,11 @@ public class ColumnInfoDaoImpl extends CustomBaseSqlDaoImpl implements ColumnInf
         		 hql.append(" and t.level = :level ");
         		 map.put("level", columnInfoQueryDTO.getLevel());
         	 }
+        	 
+        	 if(columnInfoQueryDTO.getColumnId() != null){
+        		 hql.append(" and t.id = :columnId ");
+        		 map.put("columnId", columnInfoQueryDTO.getColumnId());
+        	 }
          }
          hql.append(" order by t.orderNo asc ");
          return this.queryByMapParams(hql.toString(),map);

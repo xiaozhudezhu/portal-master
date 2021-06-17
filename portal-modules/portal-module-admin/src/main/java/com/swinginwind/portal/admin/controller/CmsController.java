@@ -136,6 +136,7 @@ public class CmsController {
 			String columnLevel = request.getParameter("columnLevel");
 			String parentId = request.getParameter("parentId");
 			String orderNoStr = request.getParameter("orderNo");
+			String layout = request.getParameter("layout");
 		    Integer orderNo = null;
 		    if(StringUtils.isNotBlank(orderNoStr)){
 		    	orderNo = Integer.parseInt(orderNoStr);
@@ -175,6 +176,7 @@ public class CmsController {
 				columnInfo.setCreateDate(new Date());
 				columnInfo.setDeleteFlag(ColumnInfo.DELETE_FLAG_NORMAL);
 			}
+			columnInfo.setLayout(layout);
 						
 			if(StringUtils.isNotBlank(id)){
 				this.columnInfoService.update(columnInfo);

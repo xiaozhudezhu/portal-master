@@ -326,7 +326,7 @@ body.mini .J_content { left: 94px; transition: all 0.4s ease; -moz-transition: a
         .J_toolsBar .t_text.mini input { width: 60px; }
         .J_toolsBar .t_text.isError { border-color: #c9394a; background-color: #fff8f8; }
         .J_toolsBar .t_text.isSuccess { border-color: #40BB8A; }
-        .J_toolsBar .t_text input { float: left; margin-top: 4px; background-color: transparent; border: 0; border-style: none; outline: none; }
+        .J_toolsBar .t_text input { float: left; line-height: 30px; background-color: transparent; border: 0; border-style: none; outline: none; }
         .J_toolsBar .t_text.w40 input { width: 40px; }
         .J_toolsBar .t_text.w60 input { width: 60px; }
         .J_toolsBar .t_text.w100 input { width: 100px; }
@@ -352,7 +352,7 @@ body.mini .J_content { left: 94px; transition: all 0.4s ease; -moz-transition: a
         .J_toolsBar .t_textarea.focus textarea { border: 1px solid #b5dff7; background-color: #f7fbfc; }
 
 
-    .J_toolsBar .t_select { float: left; margin-top: 10px; position: relative; height: 32px; line-height: 32px; background-color: #fff; }
+    .J_toolsBar .t_select { float: left; margin-top: 5px; margin-bottom: 5px; position: relative; height: 32px; line-height: 32px; background-color: #fff; }
         .J_toolsBar .t_select .s_tmp { padding: 0 20px; visibility: hidden; }
         .J_toolsBar .t_select .s_main { display: block; position: absolute; top: 0; left: 0; padding: 0 30px; width: auto; height: 30px; border: 1px solid #e8e8e8; background-color: #fff; z-index: 2; text-align: center; white-space: nowrap; color: #333; }
             .J_toolsBar .t_select .s_main:hover { color: #40BB8A; }
@@ -639,3 +639,22 @@ body.mini .J_content { left: 94px; transition: all 0.4s ease; -moz-transition: a
 .skin_blue .J_filterGroup .f_main .m_list .m_item { background: url(../images/blue_show.png) no-repeat 10px 9px; }
     .skin_blue .J_filterGroup .f_main .m_list .m_item.open { height: auto !important; background: url(../images/blue_hide.png) no-repeat 10px 9px !important; overflow: visible !important; }
         .skin_blue .J_filterGroup .f_main .m_list .m_item.open .i_default.current a { color: #0295cb; }
+
+.select2-container--open{
+	z-index:9999999999         
+}
+.J_toolsBar .select2-container .select2-selection--single {
+	height: 32px;
+	border-color: #e8e8e8;
+}
+
+.J_toolsBar .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 32px;
+    padding-left: 14px;
+}
+.J_toolsBar .select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 30px;
+}
+.J_toolsBar .select2-container {
+	width: 100% !important;
+}

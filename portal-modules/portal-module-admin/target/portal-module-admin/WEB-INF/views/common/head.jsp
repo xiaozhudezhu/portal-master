@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://shiro.apache.org/tags" prefix="shiro" %>
 
 	<div data-ui="header" class="J_header">
         <div class="h_left">
@@ -22,7 +23,7 @@
         <div class="h_right">
          <div class="r_menu">
                 <div class="m_item">
-                    <div class="i_default"><a href="javascript:;"><i class="icon user"></i><span>${sessionScope.session_login_user.realName }</span><i class="icon down"></i></a></div>
+                    <div class="i_default"><a href="javascript:;"><i class="icon user"></i><span><shiro:principal property="realName"/></span><i class="icon down"></i></a></div>
                     <div class="i_menu">
                         <div data-ui="profile" class="J_profile">
                             <div class="p_user">
@@ -30,7 +31,7 @@
                                     <a href="javascript:;"><img src="${ctx }/static/images/default_face.jpg"></a>
                                 </div>
                                 <div class="u_name">
-                                    <span>${sessionScope.session_login_user.realName }</span>
+                                    <span><shiro:principal property="username"/></span>
                                 </div>
                             </div>
                             <div class="p_list">

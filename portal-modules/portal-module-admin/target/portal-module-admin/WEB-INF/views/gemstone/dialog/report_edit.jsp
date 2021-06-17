@@ -28,7 +28,9 @@ function changeReportType(type) {
 }
 //表单验证
 $(function(){
-	
+	<c:if test="${report.type == null }">
+	$('#reportType2Table :input').attr('disabled', 'disabled');
+	</c:if>
 	$('#editForm').validator({
 		valid : function(form){
 			var laodIdx = layer.load();

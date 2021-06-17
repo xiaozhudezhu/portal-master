@@ -23,84 +23,19 @@
     <script src="../../static/js/config.js"></script>
 
     <script type="text/javascript">
-        window.rootColumnId = jc.param.get("rootColumnId");
-
-        if (!window.rootColumnId) {
-            window.resource("cmsApiColumnList", {
-                level: 0
-            }, function (data) {
-
-                /* orderNo 排序 */
-                if (!data) return false;
-
-                data = window.arraySortASC(data, "orderNo");
-                window.rootColumnId = data[0].id
-                //window.router("index", { rootColumnId: data[0].id }, true);
-
-            }, false);
-        }
-    </script>
-
-
-    <script type="text/javascript">
-        window.indexLayoutRule = [
-            /* {
-                titleClass: "",
-                titleMore: false,
-                col: "col-md-12",
-                ui: "banner",
-                uiClassName: "",
-                pageSize: 5
-            }, */
-            {
-                titleClass: "",
-                titleMore: false,
-                col: "col-md-12",
-                ui: "textList",
-                uiClassName: "maple-about notime",
-                pageSize: 6
-
-            }, {
-                titleClass: "",
-                titleMore: true,
-                col: "col-md-12",
-                ui: "textList",
-                uiClassName: "maple-grading notime",
-                pageSize: 3
-            }, {
-                titleClass: "",
-                titleMore: true,
-                col: "col-md-12",
-                ui: "textList",
-                uiClassName: "maple-grading maple-gemology notime",
-                pageSize: 4
-            }, {
-                titleClass: "",
-                titleMore: true,
-                col: "col-md-12",
-                ui: "textList",
-                uiClassName: "showImg",
-                pageSize: 3
-            }, {
-                titleClass: "",
-                titleMore: true,
-                col: "col-md-12",
-                ui: "textList",
-                uiClassName: "",
-                pageSize: 3
-            }
-
-
-        ];
-    </script>
-
-
-    <script type="text/javascript">
         jc.uiReady = function () {
-
-            window.resource("cmsApiColumnList", {
-                rootColumnId: window.rootColumnId
-            }, function (data) {
+        	window.rootColumnId = jc.param.get("rootColumnId");
+    		window.columnId = jc.param.get("columnListId");
+            if (!window.rootColumnId && !window.columnId) {
+            	window.rootColumnId = window.indexColumnId;
+            }
+			var param = {
+            };
+			if(window.rootColumnId)
+				param.rootColumnId = window.rootColumnId;
+			if(window.columnId)
+				param.columnId = window.columnId;
+            window.resource("cmsApiColumnList", param, function (data) {
 
                 data = window.arraySortASC(data, "orderNo");
 
@@ -119,16 +54,14 @@
         window.uiIndexSetup = function (data) {
         	initReport();
             var app = document.getElementById("app");
-
+			var hasAd = false;
             for (var i = 0, l = data.length; i < l; i++) {
-
-
                 var curData = data[i];
                 var curDataId = curData.id;
                 var curDataName = curData.name;
                 var curDateCode = curData.code;
-
                 if (curDateCode == "sy_ad") {
+                	hasAd = true;
                     if (jc.hasUI("banner")) {
                         jc.ui.banner.filter("type=index", "setAttr", { "data-id": curDataId, "data-path": "cmsApiArticleList" });
                         jc.ui.banner.filter("type=index", "update");
@@ -136,8 +69,12 @@
                     continue;
                 }
 
-                var rule = window.indexLayoutRule.shift() || { titleClass: "", titleMore: true, col: "col-md-6", ui: "textList", uiClassName: "", pageSize: 6 };
-
+                var rule = { titleClass: "", titleMore: true, col: "col-md-12", ui: "textList", uiClassName: "J_textList showImg", pageSize: 6 };
+				if(curData.layout) {
+					try {
+						rule = JSON.parse(curData.layout);
+					} catch(e) {}
+				}
                 var colMd = jc.createDOM({
                     classname: rule.col
                 });
@@ -146,49 +83,43 @@
                     dataUi: "titleStyle1",
                     classname: "J_titleStyle1 " + rule.titleClass,
                     dataId: curDataId,
-                    dataPath: "cmsApiArticleList",
+                    dataPath: rule.dataPath || "cmsApiArticleList",
                     dataTitleText: curDataName,
-                    dataMoreText: rule.titleMore ? "更多>>" : "",
-                    dataMoreHref: "javascript: window.router('menuAndTextlist',{ rootColumnId : '" + window.rootColumnId + "' , columnListId : '" + curDataId + "' });"
+                    dataMoreText: rule.titleMore ? "More>>" : "",
+                    dataMoreHref: "javascript: window.router('menuAndTextlist',{ rootColumnId : '" + curData.parent.id + "' , columnListId : '" + curDataId + "' });"
                 });
                 colMd.appendChild(titleStyle1);
 
-
-                if (rule.ui == "banner") {
-                    var textList = jc.createDOM({
-                        dataUi: "banner",
-                        classname: "J_banner",
-                        dataId: curDataId,
-                        dataPath: "cmsApiArticleList",
-                        dataPageSize: 10
-                    });
-                    colMd.appendChild(textList);
-                }
-
-                if (rule.ui == "textList") {
-                    var textList = jc.createDOM({
-                        dataUi: "textList",
-                        classname: "J_textList notPage " + rule.uiClassName,
-                        dataId: curDataId,
-                        dataPath: "cmsApiArticleList",
-                        dataPageSize: rule.pageSize
-                    });
-                    colMd.appendChild(textList);
-                }
-
-
+                var textList = jc.createDOM({
+                    dataUi: rule.ui,
+                    classname: rule.uiClassName,
+                    dataId: rule.ui == 'reportList' ? jc.param.get("reportNo") : curDataId,
+                    dataPath: rule.dataPath || "cmsApiArticleList",
+                    dataPageSize: rule.pageSize
+                });
+                colMd.appendChild(textList);
                 app.appendChild(colMd);
 
             }
-
+			if(!hasAd) {
+				 jc.ui.banner.filter("type=index", "setAttr", {});
+                 jc.ui.banner.filter("type=index", "update");
+			}
             jc.uiUpdate();
-
         }
         
         window.searchReport = function() {
-        	jc.ui.reportList[0].$element.attr("data-id", $('#search input').val());
-        	jc.ui.reportList.trigger('update');
-        	$('html').animate({scrollTop: $('.report_list').offset().top - 120}, 1000) };
+        	if(jc.hasUI('reportList')) {
+        		jc.ui.reportList[0].$element.attr("data-id", $('#search input').val());
+            	jc.ui.reportList.trigger('update');
+            	$('body,html').animate({scrollTop: $('.report_list').offset().top - $('#header').height() - 30}, 1000) 
+            }
+            else {
+            	window.router('index',{columnListId : window.reportColumnId, reportNo: $('#search input').val()},true);
+            }	
+        }
+        
+        	
         
         window.initReport = function() {
         	$('#search .input-group-addon').click(searchReport);
@@ -196,39 +127,6 @@
       		  if(e.which == 13)
       			  searchReport();
       			});
-        	var app = document.getElementById("app");
-        	var rule = {
-	               titleClass: "report_list",
-	               titleMore: false,
-	               col: "col-md-12",
-	               ui: "reportList",
-	               uiClassName: "maple-grading",
-	               pageSize: 6
-	
-	           };
-        	var colMd = jc.createDOM({
-                classname: rule.col
-            });
-        	var titleStyle1 = jc.createDOM({
-                dataUi: "titleStyle1",
-                classname: "J_titleStyle1 " + rule.titleClass,
-                dataTitleText: "Reports",
-                //dataMoreText: rule.titleMore ? "更多>>" : "",
-                //dataMoreHref: "javascript: window.router('menuAndTextlist',{ rootColumnId : '" + window.rootColumnId + "' , columnListId : '" + curDataId + "' });"
-            });
-            colMd.appendChild(titleStyle1);
-            if (rule.ui == "reportList") {
-                var textList = jc.createDOM({
-                    dataUi: "reportList",
-                    classname: "J_textList " + rule.uiClassName,
-                    dataId: $('#search input').val(),
-                    dataPath: "reportApiList",
-                    dataPageSize: rule.pageSize
-                });
-                colMd.appendChild(textList);
-            }
-            app.appendChild(colMd);
-            jc.uiUpdate();
         }
     </script>
 
@@ -247,7 +145,7 @@
     </div>
 
     <!-- 轮播图 -->
-    <div data-ui="banner" data-type="index" class="J_banner"></div>
+    <div data-ui="banner" data-type="index" class="J_banner main_banner"></div>
 
     <!-- 页面主体容器 -->
     <div class="J_content container">
@@ -267,6 +165,9 @@
     <!-- confirm -->
     <div data-ui="confirm" class="J_confirm modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 
-
+	<span id="top-link-block" class="affix hidden">
+		<a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;"><i class="glyphicon glyphicon-chevron-up"></i> 
+		TOP</a>
+	</span>
 </body>
 </html>

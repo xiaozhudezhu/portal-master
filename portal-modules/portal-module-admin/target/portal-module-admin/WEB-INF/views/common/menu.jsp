@@ -14,7 +14,7 @@
             </div>
             <div class="u_right">
                 <div class="r_name">
-                	<span>${sessionScope.session_login_user.realName }</span>
+                	<span><shiro:principal property="realName"/></span>
                 </div>
                 <div class="r_logout"><a href="${ctx }/login_out">[退出]</a></div>
             </div>

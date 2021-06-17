@@ -2,6 +2,7 @@ package com.swinginwind.portal.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class CmsController {
 		String code = request.getParameter("code");
 		String name = request.getParameter("name");
 		String levelStr = request.getParameter("level");
+		String columnId = request.getParameter("columnId");
 		String rootColumnId = request.getParameter("rootColumnId");
 		//1为true,0为false
 		String isRootColumnLikeStr= request.getParameter("isRootColumnLike");
@@ -71,6 +73,7 @@ public class CmsController {
 		columnInfoQueryDTO.setName(name);
 		columnInfoQueryDTO.setRootColumnId(rootColumnId);
 		columnInfoQueryDTO.setIsRootColumnLike(isRootColumnLike);
+		columnInfoQueryDTO.setColumnId(columnId);
 		List<ColumnInfo> list = this.columnInfoService.queryColumnInfoList(columnInfoQueryDTO);
 		if(level != null && level == 0) {
 			for(ColumnInfo info : list) {
@@ -80,6 +83,21 @@ public class CmsController {
 				info.setChildren(this.columnInfoService.queryColumnInfoList(columnInfoQueryDTO));
 				for(ColumnInfo info1 : info.getChildren())
 					info1.setParent(null);
+			}
+		}
+		if("4028821e5b7a0971015b7a0a1cbf0000".equals(rootColumnId)) {
+			List<ColumnInfo> list1 = list;
+			list = new ArrayList<ColumnInfo>();
+			for(ColumnInfo info : list1) {
+				columnInfoQueryDTO = new ColumnInfoQueryDTO();
+				columnInfoQueryDTO.setCode(info.getCode().replace("home_", ""));
+				columnInfoQueryDTO.setIsCodeLike(false);
+				List<ColumnInfo> tempList = this.columnInfoService.queryColumnInfoList(columnInfoQueryDTO);
+				if(tempList.size() > 0) {
+					tempList.get(0).setLayout(info.getLayout());
+					tempList.get(0).setName(info.getName());
+					list.add(tempList.get(0));
+				}
 			}
 		}
 		ajaxResult.setSuccess(true);

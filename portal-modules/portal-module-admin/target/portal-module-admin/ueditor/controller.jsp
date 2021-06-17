@@ -9,7 +9,11 @@
 	response.setHeader("Content-Type" , "text/html");
 	AppConfig appConfig = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext()).getBean(AppConfig.class);
 	String rootPath = appConfig.getFileDir() + "/ue";
-	
-	out.write( new ActionEnter( request, rootPath ).exec() );
+	String result = new ActionEnter( request, rootPath ).exec();	String action = request.getParameter("action");
+	if( action!=null && (action.equals("listfile") || action.equals("listimage") ) ){
+		rootPath = rootPath.replace("\\", "/");
+		result = result.replaceAll(rootPath, "/");
+	}
+	out.write(result);
 	
 %>

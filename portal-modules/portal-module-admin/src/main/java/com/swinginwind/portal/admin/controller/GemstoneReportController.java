@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -28,6 +27,8 @@ import com.swinginwind.portal.gemstone.dto.GemstoneReportQueryDTO;
 import com.swinginwind.portal.gemstone.entity.GemstoneReport;
 import com.swinginwind.portal.gemstone.entity.GemstoneReportImage;
 import com.swinginwind.portal.gemstone.service.GemstoneReportService;
+import com.swinginwind.portal.gemstone.service.GemstoneTypeService;
+import com.swinginwind.portal.gemstone.service.KvTypeService;
 
 @Controller
 @RequestMapping("/gr")
@@ -37,6 +38,13 @@ public class GemstoneReportController {
 	
 	@Autowired
 	private GemstoneReportService gemstoneReportService;
+	
+	@Autowired
+	private GemstoneTypeService gemstoneTypeService;
+	
+	@Autowired
+	private KvTypeService kvService;
+
 
 	/**
 	 * 获取证书列表
@@ -116,6 +124,22 @@ public class GemstoneReportController {
 	public String getReportFile(HttpServletRequest request, HttpServletResponse response, String reportId, boolean isPrint) {
 		File file = gemstoneReportService.getReportFile(reportId, isPrint, request);
 		return this.downLoadFile(file.getAbsolutePath(), file.getName(), "application/pdf", request, response, null);
+	}
+	
+	@RequestMapping("/getTypeSelect")
+	@ResponseBody
+	public AjaxResult getTypeSelect() {
+		AjaxResult ajaxResult = new AjaxResult();
+		ajaxResult.setData(gemstoneTypeService.getRootTypeList());
+		return ajaxResult;
+	}
+	
+	@RequestMapping("/getKvs")
+	@ResponseBody
+	public AjaxResult getKvs(String type, String typeId) {
+		AjaxResult ajaxResult = new AjaxResult();
+		ajaxResult.setData(kvService.getKvList(type, typeId));
+		return ajaxResult;
 	}
 	
 	/**

@@ -20,7 +20,7 @@ jc.uiExtend("header", {
         html += '<span class="icon-bar"></span>';
         html += '<span class="icon-bar"></span>';
         html += '</button>';
-        html += '<a class="navbar-brand" href="#page-top"><img class="img-responsive" src="../../static/images/logo.png" alt=""></a>';
+        html += '<a class="navbar-brand" href="javascript:window.location.href=window.ctx"><img class="img-responsive" src="../../static/images/logo.png" alt=""></a>';
         html += '</div>';
         html += '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">';
         html += '<ul class="nav navbar-nav navbar-right">';
@@ -40,8 +40,10 @@ jc.uiExtend("header", {
                 routerName = "index";
             }
             else {
-                routerName = "menuAndTextlist";
+                routerName = "index";
             }
+            if(data[i].code == 'home')
+            	window.indexColumnId = curDataId;
 
             var currentClass = "";
 
@@ -55,8 +57,11 @@ jc.uiExtend("header", {
             
             if(i != 0 && curData && curData.children && curData.children.length > 0) {
             	html += '<ul data-root-column-id="' + curDataId + '" data-level="1" class="dropdown-menu">';
-            	for(var j = 0; j < curData.children.length; j ++)
+            	for(var j = 0; j < curData.children.length; j ++) {
+            		if(curData.children[j].code == 'grading_report')
+            			window.reportColumnId = curData.children[j].id;
                     html += '<li><a href="javascript:;" onclick="window.router(\'' + (routerName) + '\',{rootColumnId:\'' + (curDataId) + '\', columnListId : \'' + curData.children[j].id + '\' },true)">' + (curData.children[j].name) + '</a></li>';
+            	}
             	html += '</ul>';
             }
             html += '</li>';
@@ -95,6 +100,7 @@ jc.uiExtend("header", {
         window.resource("cmsApiColumnList", {
             level: 0
         }, function (data) {
+        	window.allColumnDataList = data;
             _this.setup(data);
         }, false);
 
@@ -123,26 +129,28 @@ jc.uiExtend("footer", {
         html += '<button type="submit" class="btn btn-default">&nbsp;Submit&nbsp;</button>'
         html += '</div>';
         html += '<div class="row">';
-        html += '<div class="col-md-6 col-sm-12">';
+        html += '<div class="col-md-5 col-sm-12">';
         html += '<h2>MAPLE GEMRESEARCH LAB NORTH AMERICA</h2>';
         html += '<img class="logo-big" src="../../static/images/logo-big.png">'
         //html += '<p></p>'
         html += '</div>';
 
-        html += '<div class="col-md-6 col-sm-12">';
-        html += '<h4>网站链接</h4>';
+        html += '<div class="col-md-7 col-sm-12">';
+        html += '<h4>Links</h4>';
         html += '<ul class="list-unstyled list-inline">';
 
 
         for (var i = 0, l = data.length; i < l; i++) {
             var curData = data[i];
+            if(curData.code == 'home')
+            	continue;
             var curDataId = curData.id;
             var curDataName = curData.name;
-            html += '<li><a onclick="window.router(\'menuAndTextlist\',{rootColumnId:\'' + (curDataId) + '\'},true)"  href="javascript:;" target="_blank">' + curDataName + '</a>';
+            html += '<li><a onclick="window.router(\'index\',{rootColumnId:\'' + (curDataId) + '\'},true)"  href="javascript:;" target="_blank">' + curDataName + '</a>';
             if(i != 0 && curData && curData.children && curData.children.length > 0) {
             	html += '<ul class="list-unstyled list-small" data-root-column-id="' + curDataId + '" data-level="1">';
             	for(var j = 0; j < curData.children.length; j ++)
-                    html += '<li><a href="javascript:;" onclick="window.router(\'menuAndTextlist\',{rootColumnId:\'' + (curDataId) + '\', columnListId : \'' + curData.children[j].id + '\' },true)">' + (curData.children[j].name) + '</a></li>';
+                    html += '<li><a href="javascript:;" onclick="window.router(\'index\',{rootColumnId:\'' + (curDataId) + '\', columnListId : \'' + curData.children[j].id + '\' },true)">' + (curData.children[j].name) + '</a></li>';
             	html += '</ul>';
             }
             html += '</li>';
@@ -159,8 +167,6 @@ jc.uiExtend("footer", {
         html += '</div>';
         return html;
 
-
-
     },
     setup: function (data) {
 
@@ -169,19 +175,19 @@ jc.uiExtend("footer", {
         this.getTemplate(data, function (html) {
             _this.$element.html(html);
         });
+        $(window).scroll(function() {
+        	if ( ($(window).height() + 500) < $(document).height() ) {
+                $('#top-link-block').removeClass('hidden').affix({
+                    // how far to scroll down before link "slides" into view
+                    offset: {top:500}
+                });
+            }
+        })
 
     },
 
     init: function () {
-
-        var _this = this;
-
-        window.resource("cmsApiColumnList", {
-            level: 0
-        }, function (data) {
-            _this.setup(data);
-        }, false);
-
+    	this.setup(window.allColumnDataList);
     }
 
 });
@@ -204,13 +210,19 @@ jc.uiExtend("banner", {
 
         var data_path = this.$element.attr("data-path");
 
-        if (!this.ajaxData.columnId || !data_path) return;
-
-        window.resource(data_path, this.ajaxData, function (data) {
-            _this.setup(data);
-        });
-
-
+        if (!this.ajaxData.columnId || !data_path) {
+        	var data = {};
+        	data.list = [{
+        		title: '',
+        		coverImageUrl: window.ctx + 'static/images/default_banner.png'
+        	}];
+        	_this.setup(data);
+        }
+        else {
+        	window.resource(data_path, this.ajaxData, function (data) {
+                _this.setup(data);
+            });
+        }
     },
     setup: function (data) {
 
@@ -328,24 +340,22 @@ jc.uiExtend("textList", {
     },
     update: function () {
         var _this = this;
-
-
         this.ajaxData.columnId = this.$element.attr("data-id");
         this.ajaxData.pageSize = this.$element.attr("data-page-size") || 10;
         var data_path = this.$element.attr("data-path");
-
-
         window.resource(data_path, this.ajaxData, function (data) {
             _this.setup(data);
             _this.$page.pagination(data.totalCount, {
                 proxy: _this,
                 num_edge_entries: 1, //边缘页数
-                num_display_entries: 6, //主体页数
+                num_display_entries: 3, //主体页数
                 callback: _this.change,
-                items_per_page: _this.ajaxData.pageSize, //每页显示1项
-                prev_text: "前一页",
-                next_text: "后一页",
-                current_page: _this.ajaxData.currentPage - 1
+                items_per_page: data.pageSize, //每页显示1项
+                prev_text: "<",
+                next_text: ">",
+                first_text: "<<",
+                last_text: ">>",
+                current_page: data.currentPage - 1
             });
             if (data.totalPage < 2) {
                 _this.$page.hide();
@@ -408,12 +418,14 @@ jc.uiExtend("reportList", {
             _this.$page.pagination(data.totalCount, {
                 proxy: _this,
                 num_edge_entries: 1, //边缘页数
-                num_display_entries: 6, //主体页数
+                num_display_entries: 3, //主体页数
                 callback: _this.change,
-                items_per_page: _this.ajaxData.pageSize, //每页显示1项
-                prev_text: "前一页",
-                next_text: "后一页",
-                current_page: _this.ajaxData.currentPage - 1
+                items_per_page: data.pageSize, //每页显示1项
+                prev_text: "<",
+                next_text: ">",
+                first_text: "<<",
+                last_text: ">>",
+                current_page: data.currentPage - 1
             });
             if (data.totalPage < 2) {
                 _this.$page.hide();
@@ -486,7 +498,7 @@ jc.uiExtend("imageList", {
 
 jc.uiExtend("pageBanner", {
     init: function () {
-        this.$element.html('<img src="../../static/cache/1.jpg" />');
+        this.$element.html('<img src="../../static/images/default_banner.png" />');
     }
 });
 

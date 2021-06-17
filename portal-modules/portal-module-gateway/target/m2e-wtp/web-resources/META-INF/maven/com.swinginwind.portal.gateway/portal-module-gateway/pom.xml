@@ -10,4 +10,7 @@
   <packaging>war</packaging>
   <name>portal-module-gateway</name>
   <description>portal-module-gateway</description>
+  <build>
+	<finalName>portal-module-gateway</finalName>
+  </build>
 </project>

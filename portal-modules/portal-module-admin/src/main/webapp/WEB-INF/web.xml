@@ -8,11 +8,6 @@
 	</welcome-file-list>
 	
 	<context-param>
-		<param-name>spring.profiles.default</param-name>
-		<param-value>development</param-value><!-- development production -->
-	</context-param>
-	
-	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath:applicationContext*.xml

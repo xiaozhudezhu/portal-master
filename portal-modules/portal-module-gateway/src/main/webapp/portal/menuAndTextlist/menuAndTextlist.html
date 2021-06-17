@@ -70,7 +70,7 @@
                     dataId: columnId,
                     dataPath: "cmsApiArticleList",
                     dataTitleText: columnListIdObject.name,
-                    dataMoreText: "返回>>",
+                    dataMoreText: "Back>>",
                     dataMoreHref: "javascript: window.router('index',{ rootColumnId : '" + window.rootColumnId + "'} , true);"
                 });
 
@@ -137,7 +137,11 @@
 
     <!-- confirm -->
     <div data-ui="confirm" class="J_confirm modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
-
+	
+	<span id="top-link-block" class="affix hidden">
+		<a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;"><i class="glyphicon glyphicon-chevron-up"></i> 
+		TOP</a>
+	</span>
 
 </body>
 </html>

@@ -368,10 +368,12 @@
 
     /* 工具方法 */
     jc.tools = {
+    	monthEnglish: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Spt","Oct","Nov","Dec"],
         formatDate: function (timestamp, format) {
             var newDate = new Date(timestamp);
             var date = {
                 "M+": newDate.getMonth() + 1,
+                "E+": this.monthEnglish[newDate.getMonth()],
                 "d+": newDate.getDate(),
                 "h+": newDate.getHours(),
                 "m+": newDate.getMinutes(),
@@ -381,7 +383,7 @@
             };
 
             if (!format) {
-                format = "M月dd日";
+                format = "E dd,yyyy";
             }
 
             if (/(y+)/i.test(format)) {

@@ -37,9 +37,11 @@ import com.swinginwind.portal.common.entity.PageModel;
 import com.swinginwind.portal.common.service.CommonService;
 import com.swinginwind.portal.gemstone.WebHelper;
 import com.swinginwind.portal.gemstone.dao.GemstoneReportDao;
+import com.swinginwind.portal.gemstone.dao.GemstoneTypeDao;
 import com.swinginwind.portal.gemstone.dto.GemstoneReportQueryDTO;
 import com.swinginwind.portal.gemstone.entity.GemstoneReport;
 import com.swinginwind.portal.gemstone.entity.GemstoneReportImage;
+import com.swinginwind.portal.gemstone.entity.GemstoneType;
 
 @Service
 public class GemstoneReportService extends CommonService<GemstoneReport, String> {
@@ -49,6 +51,12 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 
 	@Autowired
 	private CustomBaseSqlDaoImpl customBaseSqlDaoImpl;
+	
+	@Autowired
+	private GemstoneTypeDao typeDao;
+	
+	@Autowired
+	private KvTypeService kvTypeService;
 
 	@Autowired
 	public void setDao(GemstoneReportDao dao) {
@@ -65,8 +73,12 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 			params.put("no", "%" + dto.getNo() + "%");
 		}
 		if (StringUtils.isNotBlank(dto.getType())) {
-			hql.append(" and u.type = :type ");
-			params.put("type", dto.getType());
+			GemstoneType type = typeDao.getOne(dto.getType());
+			if(type != null) {
+				hql.append(" and u.type.code like :typeCode");
+				params.put("typeCode", type.getCode() + "%");
+			}
+			
 		}
 		if (filterCreateUser && !WebHelper.hasRole("role_admin")) {
 			hql.append(" and u.createUser.id = :createUser");
@@ -114,7 +126,7 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 		if (report != null) {
 			// 模板路径
 			String templatePath = Thread.currentThread().getContextClassLoader()
-					.getResource("template" + report.getType() + (isPrint ? "-print" : "") + ".pdf").getPath();
+					.getResource("template" + report.getType().getCode().split("-")[0] + (isPrint ? "-print" : "") + ".pdf").getPath();
 			// 生成的新文件路径
 			String newPDFPath = appConfig.getFileDir() + "/reports/" + reportId + (isPrint ? "-print" : "") + ".pdf";
 			File newPDFDir = new File(appConfig.getFileDir() + "/reports");
@@ -137,20 +149,28 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				form.setField("object", report.getObject());
 				form.setField("identification", report.getIdentification());
 				form.setField("weight", report.getWeight() + " " + "cts");
-				form.setField("cut", report.getCut());
-				form.setField("shape", report.getShape());
+				String cutName = this.kvTypeService.getKvName(report.getCut());
+				form.setField("cut", cutName != null ? cutName : report.getCut());
+				String shapeName = this.kvTypeService.getKvName(report.getShape());
+				form.setField("shape", shapeName != null ? shapeName : report.getShape());
 				form.setField("measurements", report.getDimensionsLength() + "x" + report.getDimensionsWidth() + "x"
 						+ report.getDimensionsHeight() + " mm");
-				form.setField("color", report.getColor());
+				String colorName = this.kvTypeService.getKvName(report.getColor());
+				form.setField("color", colorName != null ? colorName : report.getColor());
 				form.setField("origin", report.getOrigin());
 				form.setField("comments", report.getComments());
 				form.setField("barcode_no", report.getNo());
-				form.setField("colorGrade", report.getColorGrade());
-				form.setField("clarityGrade", report.getClarityGrade());
+				String colorGradeName = this.kvTypeService.getKvName(report.getColorGrade());
+				form.setField("colorGrade", colorGradeName != null ? colorGradeName : report.getColorGrade());
+				String clarityGradeName = this.kvTypeService.getKvName(report.getClarityGrade());
+				form.setField("clarityGrade", clarityGradeName != null ? clarityGradeName : report.getClarityGrade());
 				form.setField("clarityFeature", report.getClarityFeature());
-				form.setField("polish", report.getPolish());
-				form.setField("fluorescence", report.getFluorescence());
-				form.setField("symmetry", report.getSymmetry());
+				String polishName = this.kvTypeService.getKvName(report.getPolish());
+				form.setField("polish", polishName != null ? polishName : report.getPolish());
+				String fluorescenceName = this.kvTypeService.getKvName(report.getFluorescence());
+				form.setField("fluorescence", fluorescenceName != null ? fluorescenceName : report.getFluorescence());
+				String symmetryName = this.kvTypeService.getKvName(report.getSymmetry());
+				form.setField("symmetry", symmetryName != null ? symmetryName : report.getSymmetry());
 				form.setField("proportions", report.getProportions());
 				if (report.getImages() != null && report.getImages().size() > 0) {
 					for (GemstoneReportImage image : report.getImages()) {
@@ -182,8 +202,8 @@ public class GemstoneReportService extends CommonService<GemstoneReport, String>
 				String content = request.getScheme() //当前链接使用的协议
 					    +"://" + request.getServerName()//服务器地址 
 					    + ":" + request.getServerPort() //端口号 
-					    + request.getContextPath() //应用名称，如果应用名称为
-					    + "/gr/getReportFile?reportId=" + reportId;
+					    + "/pdfviewer#"
+					    + reportId;
 				String filePath = System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString() + ".png";
 				File tempFile = new File(filePath);
 				this.createQRCode(content, (int) signRect.getWidth(), (int) signRect.getHeight(), BarcodeFormat.QR_CODE,

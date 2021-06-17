@@ -23,7 +23,7 @@ public class GemstoneReport extends BaseEntity {
 
 	private static final long serialVersionUID = 4154575436389807961L;
 	
-	private String type;
+	private GemstoneType type;
 	
 	private String no;
 	
@@ -72,12 +72,13 @@ public class GemstoneReport extends BaseEntity {
 	
 	private Set<GemstoneReportImage> images;
 
-	@Column(name = "type")
-	public String getType() {
+	@ManyToOne
+	@JoinColumn(name = "type")
+	public GemstoneType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(GemstoneType type) {
 		this.type = type;
 	}
 

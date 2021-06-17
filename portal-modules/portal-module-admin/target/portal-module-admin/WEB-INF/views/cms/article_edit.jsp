@@ -2,6 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <%@ include file="../common/common.jsp" %>
+<%@ taglib uri="http://shiro.apache.org/tags" prefix="shiro" %>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>添加/编辑文章 - ${title }</title>
@@ -144,7 +145,7 @@
 						<div class="t_img w100 ml10">
 						    <c:choose>
 						        <c:when test="${article.coverImageUrl != null && article.coverImageUrl != ''}">
-						            <img src="${ctx }/upload/getImage?imagePath=${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
+						            <img src="/uploadfile/${article.coverImageUrl}" id="attachURL" width="100px" height="100px" />
 						        </c:when>
 						        <c:otherwise>
 						            <img src="${ctx }/static/images/J_null.png" id="attachURL" width="100px" height="100px" />
@@ -162,7 +163,12 @@
 					<div class="J_toolsBar fl">
 					    <div class="t_text w200 ml10">
 							<label> 
-								<input type="text" name="publisher" value="${article.id == null ? sessionScope.session_login_user.realName : article.publisher }">
+								<c:if test="${article != null && article.id != null}">
+								<input type="text" name="publisher" value="${article.publisher }">
+								</c:if>
+								<c:if test="${article == null || article.id == null}">
+								<input type="text" name="publisher" value="<shiro:principal property="realName"/>">
+								</c:if>
 							</label>
 						</div>
 					</div>
@@ -218,7 +224,8 @@
 						success : function(result){
 							if(result.success){
 								layer.alert('保存成功');
-								window.location.href="${ctx}/cms/article/list"
+								//window.history.back();
+								window.location.href=document.referrer
 							}
 						}
 					});
@@ -227,7 +234,7 @@
 		});
             
        function myBack(){
-    	   window.location.href="${ctx}/cms/article/list";
+    	   window.history.back();
        }
        
        function mySubmit(){
@@ -307,7 +314,7 @@
 			'fileType'  : 'image/*',//只允许图片格式的文件
 			'onUploadSuccess' : function(file, data, response) {
 					if(data != null){
-						var attachUrl = '${pageContext.request.contextPath}' + data;								
+						var attachUrl = '/uploadfile/' + data;								
 						$("#attachURL").attr('src',attachUrl); 
 						$("#coverImageUrl").val(data);
 					}

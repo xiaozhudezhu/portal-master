@@ -9,6 +9,8 @@ public class GemstoneReportQueryDTO extends CommonQueryDTO{
 	private String no;
 	
 	private String type;
+	
+	private String typeName;
 
 	/**
 	 * @return the no
@@ -36,6 +38,20 @@ public class GemstoneReportQueryDTO extends CommonQueryDTO{
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * @return the typeName
+	 */
+	public String getTypeName() {
+		return typeName;
+	}
+
+	/**
+	 * @param typeName the typeName to set
+	 */
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
 	}
 
 
